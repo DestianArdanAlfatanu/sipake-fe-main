@@ -21,22 +21,22 @@ const items = [
         icon: House,
     },
     {
-        title: "Konsultasi Masalah",
+        title: "Konsultasi Masalah Engine",
         url: "/app/engine/consultation",
         icon: Car,
     },
     {
-        title: "Riwayat Mesin", 
+        title: "Riwayat Masalah Engine", 
         url: "/app/engine/consultation/history", 
         icon: History,
     },
     {
-        title: "Konsultasi Suspensi", 
+        title: "Konsultasi Masalah Suspension", 
         url: "/app/suspension/consultation", 
         icon: Wrench, 
     },
     {
-        title: "Riwayat Suspensi", 
+        title: "Riwayat Masalah Suspension", 
         url: "/app/suspension/consultation/history", 
         icon: Activity, 
     },

@@ -35,8 +35,9 @@ interface ConsultResult {
 }
 interface Props {
     token: string;
+    apiBaseUrl?: string;
 }
-const ConsultationProcessComp: React.FC<Props> = ({ token }) => {
+const ConsultationProcessComp: React.FC<Props> = ({ token, apiBaseUrl = "/consultations" }) => {
     const [status, setStatus] = useState<ConsultResult["status"]>();
     const [symptom, setSymptom] = useState<Symptom>();
     const [result, setResult] = useState<ConsultResult["data"]["problem"]>();
@@ -49,9 +50,8 @@ const ConsultationProcessComp: React.FC<Props> = ({ token }) => {
         setStatus(undefined);
         setResult(undefined);
         setSymptom(undefined);
-        const response = await axios.post<Response<Symptom>>(
-            "/consultations/start",
-            {},
+        const response = await axios.get<Response<Symptom>>(
+            `${apiBaseUrl}/start`,
             { headers: { Authorization: `Bearer ${token}` } }
         );
         setSymptom(response.data.data);
@@ -59,7 +59,7 @@ const ConsultationProcessComp: React.FC<Props> = ({ token }) => {
 
     const consult = async (yes: boolean) => {
         const response = await axios.post<Response<ConsultResult>>(
-            "/consultations/process",
+            `${apiBaseUrl}/process`,
             { symptom_id: symptom!.id, yes },
             { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -79,12 +79,12 @@ const ConsultationProcessComp: React.FC<Props> = ({ token }) => {
                     {status == "Result"
                         ? "Hasil Konsultasi"
                         : status == "Continue"
-                        ? "Proses Konsultasi"
-                        : status == "NeverHadAProblem"
-                        ? "Hasil Konsultasi"
-                        : status == "ProblemNotFound"
-                        ? "Hasil Konsultasi"
-                        : "Proses Konsultasi"}
+                            ? "Proses Konsultasi"
+                            : status == "NeverHadAProblem"
+                                ? "Hasil Konsultasi"
+                                : status == "ProblemNotFound"
+                                    ? "Hasil Konsultasi"
+                                    : "Proses Konsultasi"}
                 </CardTitle>
             </CardHeader>
             <CardContent>
