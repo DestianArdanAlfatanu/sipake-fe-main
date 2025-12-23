@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import axios from "@/lib/axios";
 import { Response, User } from "@/types/api.dt";
 import { cookies } from "next/headers";
+import { getAssetUrl } from "@/lib/utils";
 
 const MyAccountPage = async () => {
     const cookieStore = cookies();
@@ -16,7 +17,7 @@ const MyAccountPage = async () => {
         <div className="flex flex-col gap-8">
             <h1 className="text-4xl text-white font-semibold">Akun Saya</h1>
             <div className="w-full flex-col flex gap-4">
-                <img className="w-[275px] aspect-square object-cover object-top rounded-xl" src={`http://localhost:5000/${user.profilePicture}`} alt={`${user.name} foto profil`} />
+                <img className="w-[275px] aspect-square object-cover object-top rounded-xl" src={getAssetUrl(user.profilePicture)} alt={`${user.name} foto profil`} />
                 <Card className="bg-white/[.05]">
                     <CardHeader>
                         <CardTitle>Informasi Dasar</CardTitle>

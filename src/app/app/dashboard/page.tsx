@@ -13,11 +13,18 @@ const DashboardPage = async () => {
         headers: { Authorization: `Bearer ${token}` },
     });
 
-    const {
-        data: { data: consultationHistories },
-    } = await axios.get<Response<any[]>>("/consultations/histories", {
-        headers: { Authorization: `Bearer ${token}` },
-    });
+    // Try to get consultation histories, fallback to empty array if endpoint doesn't exist
+    let consultationHistories: any[] = [];
+    try {
+        const response = await axios.get<Response<any[]>>("/engine/consultations/histories", {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        consultationHistories = response.data.data || [];
+    } catch (error) {
+        // Endpoint might not exist yet, use empty array
+        console.log("Consultation histories endpoint not available, using empty array");
+        consultationHistories = [];
+    }
 
 
     return (

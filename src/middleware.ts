@@ -1,10 +1,8 @@
-import axios from "@/lib/axios";
-import { AxiosError } from "axios";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { Response, User } from "./types/api.dt";
 
 export async function middleware(req: NextRequest) {
+    // Handle logout
     if (req.nextUrl.pathname === "/auth/logout") {
         const response = NextResponse.redirect(new URL("/auth/login", req.url));
         response.cookies.delete("token");
@@ -12,37 +10,51 @@ export async function middleware(req: NextRequest) {
     }
 
     const token = req.cookies.get("token")?.value;
+    
+    // If user is on auth pages and has token, redirect to dashboard
     if (
         req.nextUrl.pathname === "/auth/login" ||
-        req.nextUrl.pathname === "/auth/register" ||
+        req.nextUrl.pathname === "/auth/signup" ||
         req.nextUrl.pathname === "/auth/verify"
     ) {
         if (token) {
             try {
-                await axios.get<Response<User>>("/users/profile", {
-                    headers: { Authorization: `Bearer ${token}` },
+                // Verify token by calling our API route
+                const response = await fetch(new URL("/api/users/profile", req.url), {
+                    headers: {
+                        Cookie: `token=${token}`,
+                    },
                 });
-                return NextResponse.redirect(
-                    new URL("/app/dashboard", req.url)
-                );
+                
+                if (response.ok) {
+                    return NextResponse.redirect(new URL("/app/dashboard", req.url));
+                }
             } catch (error) {
-                return NextResponse.next();
+                console.error("Middleware auth check error:", error);
             }
         }
+        return NextResponse.next();
     }
 
-    if (req.nextUrl.pathname.includes("/app")) {
+    // Protect /app routes
+    if (req.nextUrl.pathname.startsWith("/app")) {
         if (!token) {
             return NextResponse.redirect(new URL("/auth/login", req.url));
         }
+        
         try {
-            await axios.get<Response<User>>("/users/profile", {
-                headers: { Authorization: `Bearer ${token}` },
+            // Verify token by calling our API route
+            const response = await fetch(new URL("/api/users/profile", req.url), {
+                headers: {
+                    Cookie: `token=${token}`,
+                },
             });
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                console.log({ error: error.response?.data, token });
+            
+            if (!response.ok) {
+                return NextResponse.redirect(new URL("/auth/login", req.url));
             }
+        } catch (error) {
+            console.error("Middleware auth check error:", error);
             return NextResponse.redirect(new URL("/auth/login", req.url));
         }
     }

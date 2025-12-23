@@ -17,73 +17,101 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import axios from "@/lib/axios";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { isAxiosError } from "axios";
+import axios, { isAxiosError } from "axios";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
+    username: z
+        .string({ required_error: "Username harus diisi" })
+        .min(1, { message: "Username harus diisi" }),
     code: z
-        .string({ required_error: "Password harus diisi" })
-        .min(1, { message: "Password harus diisi" }),
+        .string({ required_error: "Kode verifikasi harus diisi" })
+        .min(6, { message: "Kode verifikasi harus 6 digit" })
+        .max(6, { message: "Kode verifikasi harus 6 digit" }),
 });
 
 type Schema = z.infer<typeof formSchema>;
 
 const VerifyPage = () => {
+    const searchParams = useSearchParams();
+    const username = searchParams.get("username") || "";
+
     const form = useForm<Schema>({
         resolver: zodResolver(formSchema),
+        defaultValues: {
+            username: username,
+            code: "",
+        },
     });
     const { toast } = useToast();
     const router = useRouter();
-    const params = useSearchParams();
-    const username = params.get("username")!;
 
     const onSubmit = async (values: Schema) => {
         try {
-            await axios.post("/users/verify", { username, code: values.code });
+            // Call Next.js API route
+            await axios.post("/api/auth/verify", values);
+            
             toast({
                 variant: "default",
                 title: "Berhasil",
-                description: "Email berhasil diverifikasi",
+                description: "Email berhasil diverifikasi. Silakan login.",
             });
             router.push("/auth/login");
         } catch (error) {
             if (isAxiosError(error)) {
-                const { errors, message } = error.response?.data as {
-                    errors: { [key: string]: string };
-                    message: string;
-                    statusCode: number;
-                };
+                const responseData = error.response?.data;
+                
+                // Handle case when response data exists
+                if (responseData) {
+                    const { errors, message } = responseData as {
+                        errors?: { [key: string]: string };
+                        message: string;
+                        statusCode: number;
+                    };
 
-                if (message === "Validation Error") {
-                    for (const key in errors) {
-                        form.setError(key as keyof Schema, {
-                            type: "manual",
-                            message: errors[key],
+                    if (message === "Validation Error" && errors) {
+                        for (const key in errors) {
+                            form.setError(key as keyof Schema, {
+                                type: "manual",
+                                message: errors[key],
+                            });
+                        }
+                    } else {
+                        toast({
+                            variant: "destructive",
+                            title: "Ooops!",
+                            description: message || "Terjadi kesalahan",
                         });
                     }
                 } else {
+                    // Handle case when no response data
                     toast({
                         variant: "destructive",
                         title: "Ooops!",
-                        description: message,
+                        description: "Terjadi kesalahan. Silakan coba lagi.",
                     });
                 }
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Ooops!",
+                    description: "Terjadi kesalahan yang tidak diketahui.",
+                });
             }
         }
     };
+
     return (
         <>
             <Card>
                 <CardHeader>
                     <CardTitle>Verifikasi Email</CardTitle>
                     <CardDescription>
-                        Silahkan masukan kode verifikasi yang telah dikirimkan
-                        ke email anda
+                        Masukkan kode verifikasi yang telah dikirim ke email Anda
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -94,14 +122,31 @@ const VerifyPage = () => {
                         >
                             <FormField
                                 control={form.control}
+                                name="username"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Username</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                placeholder="Masukan username anda"
+                                                {...field}
+                                                readOnly
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
                                 name="code"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Kode Verifikasi</FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder="Masukan kode verifikasi anda"
-                                                type="text"
+                                                placeholder="Masukan kode 6 digit"
+                                                maxLength={6}
                                                 {...field}
                                             />
                                         </FormControl>
@@ -114,6 +159,12 @@ const VerifyPage = () => {
                     </Form>
                 </CardContent>
             </Card>
+            <CardDescription className="text-center">
+                Sudah verifikasi?{" "}
+                <Link href={"/auth/login"} className="text-white font-medium">
+                    Login Sekarang
+                </Link>
+            </CardDescription>
         </>
     );
 };

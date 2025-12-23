@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import axios from "@/lib/axios";
+import axios from "axios";
 import { Response } from "@/types/api.dt";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
@@ -34,6 +34,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3002";
 
 const formSchema = z.object({
     name: z
@@ -52,14 +54,14 @@ const formSchema = z.object({
         .string({ required_error: "Konfirmasi Password harus diisi" })
         .min(1, { message: "Konfirmasi Password harus diisi" }),
     phoneNumber: z
-        .string({ required_error: "Konfirmasi Password harus diisi" })
-        .min(1, { message: "Konfirmasi Password harus diisi" }),
+        .string({ required_error: "Nomor HP harus diisi" })
+        .min(1, { message: "Nomor HP harus diisi" }),
     address: z
-        .string({ required_error: "Konfirmasi Password harus diisi" })
-        .min(1, { message: "Konfirmasi Password harus diisi" }),
+        .string({ required_error: "Alamat harus diisi" })
+        .min(1, { message: "Alamat harus diisi" }),
     plateNumber: z
-        .string({ required_error: "Konfirmasi Password harus diisi" })
-        .min(1, { message: "Konfirmasi Password harus diisi" }),
+        .string({ required_error: "Plat nomor harus diisi" })
+        .min(1, { message: "Plat nomor harus diisi" }),
     car_year: z.string({ required_error: "Harus Pilih salah satu" }),
     car_series_id: z.string({ required_error: "Harus Pilih salah satu" }),
     engine_code: z.string({ required_error: "Harus Pilih salah satu" }),
@@ -80,59 +82,45 @@ const RegisterPage = () => {
     const { toast } = useToast();
     const router = useRouter();
 
-useEffect(() => {
-        const fetchData = async () => {
-            await getEngineCodes();
-            await getCarYears();
-            await getCarSeries();
-        };
-        fetchData();
+    useEffect(() => {
+        getEngineCodes();
+        getCarYears();
+        getCarSeries();
     }, []);
 
     const getEngineCodes = async () => {
         try {
-            // PERBAIKAN 1: Ganti URL jadi /engine/codes (sesuai backend)
-            const response = await axios.get("/engine/codes");
-            console.log("Cek Data Engine:", response.data); // Debugging
+            const response = await axios.get<Response<{ code: string }[]>>(
+                `${BACKEND_URL}/engine/codes`
+            );
 
-            // PERBAIKAN 2: Cek apakah data dibungkus .data atau langsung array
-            const rawData = response.data.data || response.data;
-            
-            if (Array.isArray(rawData)) {
-                setEngineCodes(rawData.map((item: any) => item.code));
-            }
+            setEngineCodes(response.data.data.map((item) => item.code));
         } catch (error) {
-            console.error("Gagal ambil Engine Code:", error);
+            console.error(error);
         }
     };
 
     const getCarYears = async () => {
         try {
-            const response = await axios.get("/car-years");
-            console.log("Cek Data Years:", response.data); // Debugging
+            const response = await axios.get<Response<{ year: number }[]>>(
+                `${BACKEND_URL}/car-years`
+            );
 
-            const rawData = response.data.data || response.data;
-
-            if (Array.isArray(rawData)) {
-                setCarYears(rawData.map((item: any) => item.year.toString()));
-            }
+            setCarYears(response.data.data.map((item) => item.year.toString()));
         } catch (error) {
-            console.error("Gagal ambil Car Years:", error);
+            console.error(error);
         }
     };
 
     const getCarSeries = async () => {
         try {
-            const response = await axios.get("/car-series");
-            console.log("Cek Data Series:", response.data); // Debugging
+            const response = await axios.get<Response<{ series_id: string }[]>>(
+                `${BACKEND_URL}/car-series`
+            );
 
-            const rawData = response.data.data || response.data;
-
-            if (Array.isArray(rawData)) {
-                setCarSeries(rawData.map((item: any) => item.series_id));
-            }
+            setCarSeries(response.data.data.map((item) => item.series_id));
         } catch (error) {
-            console.error("Gagal ambil Car Series:", error);
+            console.error(error);
         }
     };
 
@@ -154,7 +142,10 @@ useEffect(() => {
             formData.append("car_series_id", values.car_series_id);
             formData.append("engine_code", values.engine_code);
             formData.append("profilePicture", values.profilePicture);
-            await axios.post("/users/register", formData);
+            
+            // Call Next.js API route instead of direct backend
+            await axios.post("/api/auth/register", formData);
+            
             toast({
                 variant: "default",
                 title: "Berhasil",
@@ -352,6 +343,7 @@ useEffect(() => {
                                                             {carSeries.map(
                                                                 (item) => (
                                                                     <SelectItem
+                                                                        key={item}
                                                                         value={
                                                                             item
                                                                         }
@@ -393,6 +385,7 @@ useEffect(() => {
                                                             {carYears.map(
                                                                 (item) => (
                                                                     <SelectItem
+                                                                        key={item}
                                                                         value={
                                                                             item
                                                                         }
@@ -434,6 +427,7 @@ useEffect(() => {
                                                             {engineCodes.map(
                                                                 (item) => (
                                                                     <SelectItem
+                                                                        key={item}
                                                                         value={
                                                                             item
                                                                         }

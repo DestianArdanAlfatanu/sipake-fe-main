@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Forward request to NestJS backend
-    const response = await fetch(`${BACKEND_URL}/users/login`, {
+    const response = await fetch(`${BACKEND_URL}/users/verify`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -21,21 +21,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(data, { status: response.status });
     }
 
-    // Store token in cookie (optional, for better security)
-    const responseWithCookie = NextResponse.json(data, { status: 200 });
-    
-    if (data.data?.token) {
-      responseWithCookie.cookies.set("token", data.data.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      });
-    }
-
-    return responseWithCookie;
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    console.error("Login API error:", error);
+    console.error("Verify API error:", error);
     return NextResponse.json(
       {
         statusCode: 500,

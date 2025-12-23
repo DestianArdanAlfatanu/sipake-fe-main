@@ -22,6 +22,7 @@ import axios, { isAxiosError } from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -36,49 +37,97 @@ const formSchema = z.object({
 type Schema = z.infer<typeof formSchema>;
 
 const LoginPage = () => {
+    const [isLoading, setIsLoading] = useState(false);
     const form = useForm<Schema>({
         resolver: zodResolver(formSchema),
+        defaultValues: {
+            username: "",
+            password: "",
+        },
     });
     const { toast } = useToast();
     const router = useRouter();
 
     const onSubmit = async (values: Schema) => {
         try {
-            await axios.post("http://localhost:3000/api/auth/login", values);
+            setIsLoading(true);
+            console.log("Submitting login...");
+            
+            // Call Next.js API route (relative URL)
+            const response = await axios.post("/api/auth/login", values);
+            
+            console.log("Login response:", response.data);
+            
+            // Store token in localStorage if available
+            if (response.data?.data?.token) {
+                localStorage.setItem("token", response.data.data.token);
+                console.log("Token saved to localStorage");
+            }
+            
             toast({
                 variant: "default",
                 title: "Berhasil",
-                description: "Anda berhasil masuk",
+                description: "Anda berhasil masuk. Mengalihkan ke dashboard...",
             });
-            router.push("/app/dashboard");
+            
+            // Wait a bit for toast to show, then redirect
+            console.log("Redirecting to dashboard...");
+            setTimeout(() => {
+                console.log("Executing redirect now...");
+                window.location.href = "/app/dashboard";
+            }, 1000);
+            
         } catch (error) {
+            console.error("Login error:", error);
+            setIsLoading(false);
+            
             if (isAxiosError(error)) {
-                const { errors, message } = error.response?.data as {
-                    errors: { [key: string]: string };
-                    message: string;
-                    statusCode: number;
-                };
+                const responseData = error.response?.data;
+                
+                if (responseData) {
+                    const { errors, message } = responseData as {
+                        errors?: { [key: string]: string };
+                        message: string;
+                        statusCode: number;
+                    };
 
-                if (message === "Validation Error") {
-                    for (const key in errors) {
-                        form.setError(key as keyof Schema, {
-                            type: "manual",
-                            message: errors[key],
-                        });
+                    if (message === "Validation Error" && errors) {
+                        for (const key in errors) {
+                            form.setError(key as keyof Schema, {
+                                type: "manual",
+                                message: errors[key],
+                            });
+                        }
+                    } else {
+                        // Handle email verification redirect
+                        if (message === "Email belum diverifikasi") {
+                            toast({
+                                variant: "destructive",
+                                title: "Email Belum Diverifikasi",
+                                description: "Silakan cek email Anda untuk kode verifikasi",
+                            });
+                            setTimeout(() => {
+                                router.push(`/auth/verify?username=${values.username}`);
+                            }, 1000);
+                        } else {
+                            toast({
+                                variant: "destructive",
+                                title: "Ooops!",
+                                description: message,
+                            });
+                        }
                     }
                 } else {
-                    if(message == "Email belum diverifikasi")  {
-                        router.push(`/auth/verify?username=${values.username}`);
-                    }
                     toast({
                         variant: "destructive",
                         title: "Ooops!",
-                        description: message,
+                        description: "Terjadi kesalahan. Silakan coba lagi.",
                     });
                 }
             }
         }
     };
+    
     return (
         <>
             <Card>
@@ -103,6 +152,8 @@ const LoginPage = () => {
                                         <FormControl>
                                             <Input
                                                 placeholder="Masukan username anda"
+                                                autoComplete="username"
+                                                disabled={isLoading}
                                                 {...field}
                                             />
                                         </FormControl>
@@ -120,6 +171,8 @@ const LoginPage = () => {
                                             <Input
                                                 placeholder="Masukan password anda"
                                                 type="password"
+                                                autoComplete="current-password"
+                                                disabled={isLoading}
                                                 {...field}
                                             />
                                         </FormControl>
@@ -127,7 +180,9 @@ const LoginPage = () => {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit">Masuk</Button>
+                            <Button type="submit" disabled={isLoading}>
+                                {isLoading ? "Memproses..." : "Masuk"}
+                            </Button>
                         </form>
                     </Form>
                 </CardContent>
