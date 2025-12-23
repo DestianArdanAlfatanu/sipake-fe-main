@@ -35,7 +35,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3002";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
 const formSchema = z.object({
     name: z
@@ -142,10 +142,10 @@ const RegisterPage = () => {
             formData.append("car_series_id", values.car_series_id);
             formData.append("engine_code", values.engine_code);
             formData.append("profilePicture", values.profilePicture);
-            
+
             // Call Next.js API route instead of direct backend
             await axios.post("/api/auth/register", formData);
-            
+
             toast({
                 variant: "default",
                 title: "Berhasil",
@@ -161,10 +161,10 @@ const RegisterPage = () => {
                 });
                 const { errors, message } = error.response
                     ?.data as {
-                    errors: { [key: string]: string };
-                    message: string;
-                    statusCode: number;
-                };
+                        errors: { [key: string]: string };
+                        message: string;
+                        statusCode: number;
+                    };
 
                 if (message === "Validation Error") {
                     for (const key in errors) {

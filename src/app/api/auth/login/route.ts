@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3002";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 
     // Store token in cookie (optional, for better security)
     const responseWithCookie = NextResponse.json(data, { status: 200 });
-    
+
     if (data.data?.token) {
       responseWithCookie.cookies.set("token", data.data.token, {
         httpOnly: true,

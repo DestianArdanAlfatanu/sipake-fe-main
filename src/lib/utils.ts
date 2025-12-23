@@ -9,7 +9,7 @@ export function cn(...inputs: ClassValue[]) {
  * Get the backend URL from environment variable
  */
 export function getBackendUrl(): string {
-  return process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3002";
+  return process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 }
 
 /**

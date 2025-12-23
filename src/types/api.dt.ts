@@ -17,13 +17,13 @@ export interface User {
     verified: boolean;
     created_at: string;
     updated_at: string;
-    carSeries: {
+    carSeries?: {
         series_id: string;
     };
-    carYear: {
+    carYear?: {
         year: number;
     };
-    engineCode: {
+    engineCode?: {
         code: string;
     };
 }

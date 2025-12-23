@@ -32,22 +32,22 @@ const DashboardPage = async () => {
             <Card className="pt-6 bg-white/[.05]">
                 <CardContent className="flex flex-col gap-6">
                     <h1 className="text-xl font-bold">
-                        {user.carSeries.series_id}
+                        {user.carSeries?.series_id || "-"}
                     </h1>
-                    <p>Seri E36</p>
+                    <p>Seri Mobil</p>
                 </CardContent>
             </Card>
             <Card className="pt-6 bg-white/[.05]">
                 <CardContent className="flex flex-col gap-6">
                     <h1 className="text-xl font-bold">
-                        {user.engineCode.code}
+                        {user.engineCode?.code || "-"}
                     </h1>
                     <p>Kode Mesin</p>
                 </CardContent>
             </Card>
             <Card className="pt-6 bg-white/[.05]">
                 <CardContent className="flex flex-col gap-6">
-                    <h1 className="text-xl font-bold">{user.plateNumber}</h1>
+                    <h1 className="text-xl font-bold">{user.plateNumber || "-"}</h1>
                     <p>Nomor Polisi Kendaraan</p>
                 </CardContent>
             </Card>
