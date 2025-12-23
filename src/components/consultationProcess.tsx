@@ -22,10 +22,11 @@ interface ConsultResult {
 }
 
 interface Props {
+  token: string; // Authentication token
   apiBaseUrl?: string; // Default: "/consultations"
 }
 
-export default function ConsultationProcess({ apiBaseUrl = "/consultations" }: Props) {
+export default function ConsultationProcess({ token, apiBaseUrl = "/consultations" }: Props) {
   const router = useRouter();
   const [symptoms, setSymptoms] = useState<Symptom[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -38,14 +39,13 @@ export default function ConsultationProcess({ apiBaseUrl = "/consultations" }: P
   useEffect(() => {
     const fetchSymptoms = async () => {
       try {
-        const token = localStorage.getItem("token");
         // Tentukan URL berdasarkan modul (Engine atau Suspensi)
         let symptomUrl = "http://localhost:5000/engine/symptoms"; // Default Engine
         if (apiBaseUrl.includes("suspension")) {
-           symptomUrl = "http://localhost:5000/suspension/symptoms";
+          symptomUrl = "http://localhost:5000/suspension/symptoms";
         } else if (apiBaseUrl.includes("consultations")) {
-           // Fallback untuk engine jika url standar
-           symptomUrl = "http://localhost:5000/engine/symptoms"; 
+          // Fallback untuk engine jika url standar
+          symptomUrl = "http://localhost:5000/engine/symptoms";
         }
 
         const response = await axios.get(symptomUrl, {
@@ -59,18 +59,18 @@ export default function ConsultationProcess({ apiBaseUrl = "/consultations" }: P
     };
 
     fetchSymptoms();
-  }, [apiBaseUrl]);
+  }, [apiBaseUrl, token]);
 
   // 2. Logika Menjawab (Simpan Dulu, Jangan Langsung Kirim)
   const handleAnswer = async (yes: boolean) => {
     const currentSymptom = symptoms[currentIndex];
-    
+
     // Simpan jawaban (1.0 kalau Ya, 0.0 kalau Tidak)
-    const newAnswer = { 
-      symptomId: currentSymptom.id, 
-      userCf: yes ? 1.0 : 0.0 
+    const newAnswer = {
+      symptomId: currentSymptom.id,
+      userCf: yes ? 1.0 : 0.0
     };
-    
+
     const updatedAnswers = [...answers, newAnswer];
     setAnswers(updatedAnswers);
 
@@ -86,7 +86,6 @@ export default function ConsultationProcess({ apiBaseUrl = "/consultations" }: P
   const submitConsultation = async (finalAnswers: any[]) => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
       // Format payload yang benar: { symptoms: [...] }
       const payload = { symptoms: finalAnswers };
 
@@ -115,7 +114,7 @@ export default function ConsultationProcess({ apiBaseUrl = "/consultations" }: P
     return (
       <div className="max-w-2xl mx-auto bg-gray-800 p-8 rounded-lg text-white mt-10">
         <h2 className="text-2xl font-bold mb-4 text-green-400">Hasil Diagnosa</h2>
-        
+
         {result.best_match ? (
           <div className="space-y-4">
             <div className="bg-gray-700 p-4 rounded">
@@ -133,7 +132,7 @@ export default function ConsultationProcess({ apiBaseUrl = "/consultations" }: P
           </div>
         )}
 
-        <button 
+        <button
           onClick={() => window.location.reload()}
           className="mt-6 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded font-bold"
         >
@@ -146,8 +145,8 @@ export default function ConsultationProcess({ apiBaseUrl = "/consultations" }: P
   // Tampilan Pertanyaan
   const currentSymptom = symptoms[currentIndex];
   // Fix URL Gambar (tambah localhost:5000)
-  const imageUrl = currentSymptom.image 
-    ? `http://localhost:5000/${currentSymptom.image.replace(/\\/g, '/')}` 
+  const imageUrl = currentSymptom.image
+    ? `http://localhost:5000/${currentSymptom.image.replace(/\\/g, '/')}`
     : null;
 
   return (
@@ -161,9 +160,9 @@ export default function ConsultationProcess({ apiBaseUrl = "/consultations" }: P
 
       <div className="bg-black aspect-video rounded-lg mb-6 flex items-center justify-center overflow-hidden border border-gray-700">
         {imageUrl ? (
-          <img 
-            src={imageUrl} 
-            alt={currentSymptom.name} 
+          <img
+            src={imageUrl}
+            alt={currentSymptom.name}
             className="h-full w-full object-contain"
             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
           />
