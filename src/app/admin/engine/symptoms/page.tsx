@@ -38,11 +38,13 @@ export default function EngineSymptomsPage() {
                 params: { search, page, limit: 10 },
             });
 
-            setSymptoms(response.data.data);
-            setTotalPages(response.data.meta.totalPages);
+            // ResponseInterceptor wraps response: { data: { data: [...], meta: {...} } }
+            setSymptoms(response.data.data.data || []);
+            setTotalPages(response.data.data.meta?.totalPages || 1);
             setLoading(false);
         } catch (error) {
             console.error('Failed to fetch symptoms:', error);
+            setSymptoms([]);  // Set empty array on error
             setLoading(false);
         }
     };

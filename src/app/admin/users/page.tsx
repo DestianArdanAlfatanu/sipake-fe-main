@@ -41,10 +41,12 @@ export default function UserManagementPage() {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            setUsers(response.data.data);
+            // ResponseInterceptor wraps response: { data: { data: [...], meta: {...} } }
+            setUsers(response.data.data.data || []);
             setLoading(false);
         } catch (error) {
             console.error('Failed to fetch users:', error);
+            setUsers([]);  // Set empty array on error
             setLoading(false);
         }
     };

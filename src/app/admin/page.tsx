@@ -32,7 +32,15 @@ export default function AdminDashboard() {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            setStats(response.data.data);
+            // ResponseInterceptor wraps response: { data: { data: {...} } }
+            setStats(response.data.data.data || {
+                users: { total: 0 },
+                consultations: {
+                    total: 0, today: 0, thisWeek: 0,
+                    byModule: { engine: 0, suspension: 0 }
+                },
+                topProblems: []
+            });
         } catch (error: any) {
             console.error('Failed to fetch stats:', error);
             setError(error.response?.data?.message || 'Failed to load dashboard data');

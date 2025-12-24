@@ -21,15 +21,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(data, { status: response.status });
     }
 
-    // Store token in cookie (optional, for better security)
+    // Store token in cookie - httpOnly: false so client can read it!
     const responseWithCookie = NextResponse.json(data, { status: 200 });
 
     if (data.data?.token) {
       responseWithCookie.cookies.set("token", data.data.token, {
-        httpOnly: true,
+        httpOnly: false, // MUST be false for client-side access!
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: "/", // Important: accessible from all paths
       });
     }
 

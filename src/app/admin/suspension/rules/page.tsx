@@ -57,17 +57,21 @@ export default function SuspensionRulesPage() {
                 }),
             ]);
 
-            setRules(rulesRes.data.data);
-            setProblems(problemsRes.data.data);
-            setSymptoms(symptomsRes.data.data);
+            // ResponseInterceptor wraps response: { data: { data: [...], meta: {...} } }
+            setRules(rulesRes.data.data.data || []);
+            setProblems(problemsRes.data.data.data || []);
+            setSymptoms(symptomsRes.data.data.data || []);
 
-            if (problemsRes.data.data.length > 0) {
-                setSelectedProblem(problemsRes.data.data[0].id);
+            if ((problemsRes.data.data.data || []).length > 0) {
+                setSelectedProblem(problemsRes.data.data.data[0].id);
             }
 
             setLoading(false);
         } catch (error) {
             console.error('Failed to fetch data:', error);
+            setRules([]);
+            setProblems([]);
+            setSymptoms([]);
             setLoading(false);
         }
     };

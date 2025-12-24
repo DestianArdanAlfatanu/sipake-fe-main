@@ -43,11 +43,13 @@ export default function EngineProblemsPage() {
                 params: { search, page, limit: 10 },
             });
 
-            setProblems(response.data.data);
-            setTotalPages(response.data.meta.totalPages);
+            // ResponseInterceptor wraps response: { data: { data: [...], meta: {...} } }
+            setProblems(response.data.data.data || []);
+            setTotalPages(response.data.data.meta?.totalPages || 1);
             setLoading(false);
         } catch (error) {
             console.error('Failed to fetch problems:', error);
+            setProblems([]);  // Set empty array on error
             setLoading(false);
         }
     };
