@@ -11,8 +11,24 @@ export default function AdminDashboard() {
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [userRole, setUserRole] = useState<string | null>(null);
 
     useEffect(() => {
+        // Get user role from token
+        const token = document.cookie
+            .split('; ')
+            .find((row) => row.startsWith('token='))
+            ?.split('=')[1];
+
+        if (token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                setUserRole(payload.role);
+            } catch (e) {
+                console.error('Failed to decode token:', e);
+            }
+        }
+
         fetchStats();
     }, []);
 
@@ -225,11 +241,13 @@ export default function AdminDashboard() {
                             description="Add, edit, or delete suspension problems"
                             href="/admin/suspension/problems"
                         />
-                        <QuickActionButton
-                            title="View All Users"
-                            description="Manage user accounts and permissions"
-                            href="/admin/users"
-                        />
+                        {userRole === 'SUPER_ADMIN' && (
+                            <QuickActionButton
+                                title="View All Users"
+                                description="Manage user accounts and permissions"
+                                href="/admin/users"
+                            />
+                        )}
                     </div>
                 </CardContent>
             </Card>

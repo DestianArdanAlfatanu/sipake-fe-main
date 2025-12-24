@@ -57,14 +57,34 @@ export default function EngineRulesPage() {
                 }),
             ]);
 
-            // ResponseInterceptor wraps response: { data: { data: [...], meta: {...} } }
-            setRules(rulesRes.data.data.data || []);
+            // Debug: Log the actual response structure
+            console.log('Engine Rules response:', rulesRes.data);
+            console.log('Engine Rules data:', rulesRes.data.data);
+
+            // ResponseInterceptor wraps response: { data: { data: [...] } }
+            // Rules endpoint returns { data: rules } (no pagination)
+            // Extract rules array - handle both possible formats
+            let rulesArray = rulesRes.data.data;
+
+            // If rulesArray is an object with a 'data' property, extract it
+            if (rulesArray && typeof rulesArray === 'object' && !Array.isArray(rulesArray) && rulesArray.data) {
+                rulesArray = rulesArray.data;
+            }
+
+            // Ensure it's an array
+            if (!Array.isArray(rulesArray)) {
+                console.error('Engine Rules is not an array:', rulesArray);
+                rulesArray = [];
+            }
+
+            setRules(rulesArray);
             setProblems(problemsRes.data.data.data || []);
             setSymptoms(symptomsRes.data.data.data || []);
 
-            if ((problemsRes.data.data.data || []).length > 0) {
-                setSelectedProblem(problemsRes.data.data.data[0].id);
-            }
+            // Don't auto-select first problem - default to "All Problems" (empty string)
+            // if ((problemsRes.data.data.data || []).length > 0) {
+            //     setSelectedProblem(problemsRes.data.data.data[0].id);
+            // }
 
             setLoading(false);
         } catch (error) {
@@ -200,7 +220,7 @@ export default function EngineRulesPage() {
                         <select
                             value={selectedProblem}
                             onChange={(e) => setSelectedProblem(e.target.value)}
-                            className="border rounded-md px-3 py-2 min-w-[300px]"
+                            className="border rounded-md px-3 py-2 min-w-[300px] bg-white text-gray-900"
                         >
                             <option value="">All Problems</option>
                             {problems.map((p) => (

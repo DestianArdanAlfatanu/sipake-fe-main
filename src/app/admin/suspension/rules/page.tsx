@@ -11,7 +11,7 @@ interface Rule {
     id: number;
     problem: { id: string; name: string };
     symptom: { id: string; name: string };
-    expertCf: number;
+    cfPakar: number; // Backend uses cfPakar, not expertCf
 }
 
 interface Problem {
@@ -57,14 +57,34 @@ export default function SuspensionRulesPage() {
                 }),
             ]);
 
-            // ResponseInterceptor wraps response: { data: { data: [...], meta: {...} } }
-            setRules(rulesRes.data.data.data || []);
+            // Debug: Log the actual response structure
+            console.log('Rules response:', rulesRes.data);
+            console.log('Rules data:', rulesRes.data.data);
+
+            // ResponseInterceptor wraps response: { data: { data: [...] } }
+            // Rules endpoint returns { data: rules } (no pagination)
+            // Extract rules array - handle both possible formats
+            let rulesArray = rulesRes.data.data;
+
+            // If rulesArray is an object with a 'data' property, extract it
+            if (rulesArray && typeof rulesArray === 'object' && !Array.isArray(rulesArray) && rulesArray.data) {
+                rulesArray = rulesArray.data;
+            }
+
+            // Ensure it's an array
+            if (!Array.isArray(rulesArray)) {
+                console.error('Rules is not an array:', rulesArray);
+                rulesArray = [];
+            }
+
+            setRules(rulesArray);
             setProblems(problemsRes.data.data.data || []);
             setSymptoms(symptomsRes.data.data.data || []);
 
-            if ((problemsRes.data.data.data || []).length > 0) {
-                setSelectedProblem(problemsRes.data.data.data[0].id);
-            }
+            // Don't auto-select first problem - default to "All Problems" (empty string)
+            // if ((problemsRes.data.data.data || []).length > 0) {
+            //     setSelectedProblem(problemsRes.data.data.data[0].id);
+            // }
 
             setLoading(false);
         } catch (error) {
@@ -189,7 +209,7 @@ export default function SuspensionRulesPage() {
                         <select
                             value={selectedProblem}
                             onChange={(e) => setSelectedProblem(e.target.value)}
-                            className="border rounded-md px-3 py-2 min-w-[300px]"
+                            className="border rounded-md px-3 py-2 min-w-[300px] bg-white text-gray-900"
                         >
                             <option value="">All Problems</option>
                             {problems.map((p) => (
@@ -250,7 +270,7 @@ export default function SuspensionRulesPage() {
                                             </td>
                                             <td className="p-4">
                                                 <CFInput
-                                                    value={rule.expertCf}
+                                                    value={rule.cfPakar}
                                                     onChange={(value) =>
                                                         handleUpdateCF(rule.problem.id, rule.symptom.id, value)
                                                     }
@@ -293,13 +313,18 @@ export default function SuspensionRulesPage() {
 
 function CFInput({ value, onChange }: { value: number; onChange: (value: number) => void }) {
     const [editing, setEditing] = useState(false);
-    const [tempValue, setTempValue] = useState(value.toString());
+    const [tempValue, setTempValue] = useState((value || 0).toString());
+
+    // Update tempValue when value prop changes
+    useEffect(() => {
+        setTempValue((value || 0).toString());
+    }, [value]);
 
     const handleSave = () => {
         const numValue = parseFloat(tempValue);
         if (isNaN(numValue) || numValue < 0 || numValue > 1) {
             alert('CF must be between 0.0 and 1.0');
-            setTempValue(value.toString());
+            setTempValue((value || 0).toString());
             return;
         }
         onChange(numValue);
