@@ -52,38 +52,51 @@ const LoginPage = () => {
         try {
             setIsLoading(true);
             console.log("Submitting login...");
-            
+
             // Call Next.js API route (relative URL)
             const response = await axios.post("/api/auth/login", values);
-            
+
             console.log("Login response:", response.data);
-            
-            // Store token in localStorage if available
+
+            // Store token in COOKIES (not localStorage!)
             if (response.data?.data?.token) {
-                localStorage.setItem("token", response.data.data.token);
-                console.log("Token saved to localStorage");
+                const token = response.data.data.token;
+                // Set cookie with 7 days expiry
+                document.cookie = `token=${token}; path=/; max-age=${7 * 24 * 60 * 60}`;
+                console.log("Token saved to cookies:", token.substring(0, 20) + "...");
             }
-            
+
+            // Get user role from response
+            const userRole = response.data?.data?.user?.role;
+            console.log("User role:", userRole);
+
             toast({
                 variant: "default",
                 title: "Berhasil",
                 description: "Anda berhasil masuk. Mengalihkan ke dashboard...",
             });
-            
-            // Wait a bit for toast to show, then redirect
-            console.log("Redirecting to dashboard...");
+
+            // Role-based redirect
             setTimeout(() => {
                 console.log("Executing redirect now...");
-                window.location.href = "/app/dashboard";
+
+                // Redirect based on role
+                if (userRole === 'SUPER_ADMIN' || userRole === 'EXPERT') {
+                    console.log("Redirecting to admin dashboard...");
+                    window.location.href = "/admin";
+                } else {
+                    console.log("Redirecting to user dashboard...");
+                    window.location.href = "/app/dashboard";
+                }
             }, 1000);
-            
+
         } catch (error) {
             console.error("Login error:", error);
             setIsLoading(false);
-            
+
             if (isAxiosError(error)) {
                 const responseData = error.response?.data;
-                
+
                 if (responseData) {
                     const { errors, message } = responseData as {
                         errors?: { [key: string]: string };
@@ -127,7 +140,7 @@ const LoginPage = () => {
             }
         }
     };
-    
+
     return (
         <>
             <Card>

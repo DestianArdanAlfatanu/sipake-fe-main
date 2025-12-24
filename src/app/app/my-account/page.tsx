@@ -30,7 +30,7 @@ const MyAccountPage = async () => {
                         <div className="w-full max-w-xl grid grid-cols-2">
                             <p className="text-white text-lg">Seri BMW</p>
                             <p className="text-white text-lg">
-                                {user.carSeries.series_id}
+                                {user.carSeries?.series_id || 'N/A'}
                             </p>
                         </div>
                         <div className="w-full max-w-xl grid grid-cols-2">
@@ -38,13 +38,13 @@ const MyAccountPage = async () => {
                                 Tahun Produksi BMW
                             </p>
                             <p className="text-white text-lg">
-                                {user.carYear.year}
+                                {user.carYear?.year || 'N/A'}
                             </p>
                         </div>
                         <div className="w-full max-w-xl grid grid-cols-2">
                             <p className="text-white text-lg">Kode Mesin BMW</p>
                             <p className="text-white text-lg">
-                                {user.engineCode.code}
+                                {user.engineCode?.code || 'N/A'}
                             </p>
                         </div>
                         <div className="w-full max-w-xl grid grid-cols-2">
