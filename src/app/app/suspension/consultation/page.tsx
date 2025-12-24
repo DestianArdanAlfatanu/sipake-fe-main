@@ -31,8 +31,8 @@ const SuspensionPage = () => {
                     sangat disarankan sebelum diagnosa sistem.
                 </CardDescription>
                 <CardDescription>
-                    Sistem Ini Dirancang Dengan Bantuan Pakar BMW E36.
-                    Segala resiko perbaikan mandiri ditanggung pengguna.
+                    Sistem Ini Dirancang Dengan Bantuan Pakar BMW
+                    : Om Rizal (Mekanik Bengkel Spesialis BMW. New Jaya Motor, Bintaro Trade Center)
                 </CardDescription>
             </CardHeader>
             <CardContent>

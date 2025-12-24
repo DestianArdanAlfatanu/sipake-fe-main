@@ -13,19 +13,32 @@ const DashboardPage = async () => {
         headers: { Authorization: `Bearer ${token}` },
     });
 
-    // Try to get consultation histories, fallback to empty array if endpoint doesn't exist
-    let consultationHistories: any[] = [];
+    // Fetch both Engine and Suspension consultation histories
+    let engineHistories: any[] = [];
+    let suspensionHistories: any[] = [];
+
     try {
-        const response = await axios.get<Response<any[]>>("/engine/consultations/histories", {
+        const engineResponse = await axios.get<Response<any[]>>("/engine/consultations/histories", {
             headers: { Authorization: `Bearer ${token}` },
         });
-        consultationHistories = response.data.data || [];
+        engineHistories = engineResponse.data.data || [];
     } catch (error) {
-        // Endpoint might not exist yet, use empty array
-        console.log("Consultation histories endpoint not available, using empty array");
-        consultationHistories = [];
+        console.log("Engine consultation histories not available");
+        engineHistories = [];
     }
 
+    try {
+        const suspensionResponse = await axios.get<Response<any[]>>("/suspension-consultations/histories", {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        suspensionHistories = suspensionResponse.data.data || [];
+    } catch (error) {
+        console.log("Suspension consultation histories not available");
+        suspensionHistories = [];
+    }
+
+    // Calculate total consultations from both modules
+    const totalConsultations = engineHistories.length + suspensionHistories.length;
 
     return (
         <div className="grid grid-cols-4 gap-4">
@@ -54,9 +67,9 @@ const DashboardPage = async () => {
             <Card className="pt-6 bg-white/[.05]">
                 <CardContent className="flex flex-col gap-6">
                     <h1 className="text-xl font-bold">
-                        {consultationHistories.length}
+                        {totalConsultations}
                     </h1>
-                    <p>Jumlah Konsultasi</p>
+                    <p>Total Konsultasi</p>
                 </CardContent>
             </Card>
         </div>
