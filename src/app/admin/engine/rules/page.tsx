@@ -188,7 +188,7 @@ export default function EngineRulesPage() {
                 </div>
                 <Button
                     onClick={() => setShowAddModal(true)}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Rule
@@ -472,6 +472,7 @@ function AddRuleModal({
                         <div>
                             <label className="block text-sm font-medium mb-2">CF Value (0.0 - 1.0)</label>
                             <Input
+                                className="w-full border rounded-md px-3 py-2 border-gray-300 focus:ring-blue-500 focus:border-blue-500 bg-white"
                                 type="number"
                                 step="0.1"
                                 min="0"
@@ -485,10 +486,10 @@ function AddRuleModal({
                         </div>
 
                         <div className="flex gap-2 justify-end pt-4">
-                            <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
+                            <Button className="bg-red-600 text-white border-red-700 hover:text-red-600" type="button" variant="outline" onClick={onClose} disabled={loading}>
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">
+                            <Button className="bg-blue-600 text-white hover:bg-blue-900" type="submit" disabled={loading}>
                                 {loading ? 'Creating...' : 'Create Rule'}
                             </Button>
                         </div>

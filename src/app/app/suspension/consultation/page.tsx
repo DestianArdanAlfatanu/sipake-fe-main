@@ -36,7 +36,7 @@ const SuspensionPage = () => {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <Button onClick={() => startConsultation()}>
+                <Button onClick={() => startConsultation()} className="bg-blue-600 hover:bg-blue-700 text-white">
                     Mulai Diagnosa Suspensi
                 </Button>
             </CardContent>

@@ -42,34 +42,34 @@ const DashboardPage = async () => {
 
     return (
         <div className="grid grid-cols-4 gap-4">
-            <Card className="pt-6 bg-white/[.05]">
+            <Card className="pt-6 shadow-md hover:shadow-lg transition-shadow">
                 <CardContent className="flex flex-col gap-6">
-                    <h1 className="text-xl font-bold">
+                    <h1 className="text-xl font-bold text-blue-600">
                         {user.carSeries?.series_id || "-"}
                     </h1>
-                    <p>Seri Mobil</p>
+                    <p className="text-muted-foreground">Seri Mobil</p>
                 </CardContent>
             </Card>
-            <Card className="pt-6 bg-white/[.05]">
+            <Card className="pt-6 shadow-md hover:shadow-lg transition-shadow">
                 <CardContent className="flex flex-col gap-6">
-                    <h1 className="text-xl font-bold">
+                    <h1 className="text-xl font-bold text-blue-600">
                         {user.engineCode?.code || "-"}
                     </h1>
-                    <p>Kode Mesin</p>
+                    <p className="text-muted-foreground">Kode Mesin</p>
                 </CardContent>
             </Card>
-            <Card className="pt-6 bg-white/[.05]">
+            <Card className="pt-6 shadow-md hover:shadow-lg transition-shadow">
                 <CardContent className="flex flex-col gap-6">
-                    <h1 className="text-xl font-bold">{user.plateNumber || "-"}</h1>
-                    <p>Nomor Polisi Kendaraan</p>
+                    <h1 className="text-xl font-bold text-blue-600">{user.plateNumber || "-"}</h1>
+                    <p className="text-muted-foreground">Nomor Polisi Kendaraan</p>
                 </CardContent>
             </Card>
-            <Card className="pt-6 bg-white/[.05]">
+            <Card className="pt-6 shadow-md hover:shadow-lg transition-shadow">
                 <CardContent className="flex flex-col gap-6">
-                    <h1 className="text-xl font-bold">
+                    <h1 className="text-xl font-bold text-blue-600">
                         {totalConsultations}
                     </h1>
-                    <p>Total Konsultasi</p>
+                    <p className="text-muted-foreground">Total Konsultasi</p>
                 </CardContent>
             </Card>
         </div>

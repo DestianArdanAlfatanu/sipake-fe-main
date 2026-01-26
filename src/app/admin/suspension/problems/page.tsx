@@ -95,7 +95,7 @@ export default function SuspensionProblemsPage() {
                         setEditingProblem(null);
                         setShowModal(true);
                     }}
-                    className="bg-green-600 hover:bg-green-700"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Problem
@@ -105,12 +105,12 @@ export default function SuspensionProblemsPage() {
             <Card>
                 <CardContent className="pt-6">
                     <div className="flex items-center gap-2">
-                        <Search className="h-5 w-5 text-gray-400" />
+                        <Search className="h-5 w-5 text-blue-600" />
                         <Input
                             placeholder="Search by ID or name..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="max-w-md"
+                            className="max-w-md focus:ring-blue-600 focus:border-blue-600 bg-white"
                         />
                     </div>
                 </CardContent>
@@ -163,6 +163,7 @@ export default function SuspensionProblemsPage() {
                                             <td className="p-4">
                                                 <div className="flex items-center justify-end gap-2">
                                                     <Button
+                                                        className="bg-blue-500 text-black"
                                                         variant="outline"
                                                         size="sm"
                                                         onClick={() => {
@@ -191,6 +192,7 @@ export default function SuspensionProblemsPage() {
                     {totalPages > 1 && (
                         <div className="flex items-center justify-center gap-2 mt-6">
                             <Button
+                                className="bg-blue-600 text-white"
                                 variant="outline"
                                 onClick={() => setPage(page - 1)}
                                 disabled={page === 1}
@@ -201,6 +203,7 @@ export default function SuspensionProblemsPage() {
                                 Page {page} of {totalPages}
                             </span>
                             <Button
+                                className="bg-blue-600 text-white"
                                 variant="outline"
                                 onClick={() => setPage(page + 1)}
                                 disabled={page === totalPages}
@@ -292,6 +295,7 @@ function ProblemModal({
                         <div>
                             <label className="block text-sm font-medium mb-2">Problem ID</label>
                             <Input
+                                className="bg-white text-black"
                                 value={formData.id}
                                 onChange={(e) => setFormData({ ...formData, id: e.target.value })}
                                 placeholder="e.g., PS01"
@@ -303,6 +307,7 @@ function ProblemModal({
                         <div>
                             <label className="block text-sm font-medium mb-2">Problem Name</label>
                             <Input
+                                className="bg-white text-black"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 placeholder="e.g., Shock Absorber Bocor"
@@ -324,6 +329,7 @@ function ProblemModal({
                         <div>
                             <label className="block text-sm font-medium mb-2">Image Filename</label>
                             <Input
+                                className="bg-white text-black"
                                 value={formData.pict}
                                 onChange={(e) => setFormData({ ...formData, pict: e.target.value })}
                                 placeholder="e.g., shock-bocor.jpg"
@@ -332,10 +338,10 @@ function ProblemModal({
                         </div>
 
                         <div className="flex gap-2 justify-end pt-4">
-                            <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
+                            <Button className="bg-red-600 text-white border-red-700 hover:text-red-600" type="button" variant="outline" onClick={onClose} disabled={loading}>
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={loading} className="bg-green-600 hover:bg-green-700">
+                            <Button className="bg-blue-600 text-white hover:bg-blue-900" type="submit" disabled={loading}>
                                 {loading ? 'Saving...' : problem ? 'Update' : 'Create'}
                             </Button>
                         </div>

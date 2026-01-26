@@ -263,7 +263,7 @@ const ConsultationProcessComp: React.FC<Props> = ({ token, apiBaseUrl, historyRo
                                 <div className="flex items-center gap-2 pt-4">
                                     <Button
                                         onClick={() => startConsultation()}
-                                        className="mt-4"
+                                        className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
                                     >
                                         Mulai Konsultasi Baru
                                     </Button>
@@ -272,7 +272,7 @@ const ConsultationProcessComp: React.FC<Props> = ({ token, apiBaseUrl, historyRo
                                         onClick={() =>
                                             router.push(historyRoute)
                                         }
-                                        className="mt-4"
+                                        className="mt-4 border border-blue-600 bg-white hover:text-blue-900 hover:bg-blue-100 text-blue-600"
                                     >
                                         Lihat Riwayat Konsultasi
                                     </Button>
@@ -293,7 +293,7 @@ const ConsultationProcessComp: React.FC<Props> = ({ token, apiBaseUrl, historyRo
                                     {symptom.name}
                                 </CardDescription>
                                 <div className="flex gap-4">
-                                    <Button onClick={() => consult(true)}>
+                                    <Button onClick={() => consult(true)} className="bg-blue-600 hover:bg-blue-700 text-white">
                                         Ya
                                     </Button>
                                     <Button

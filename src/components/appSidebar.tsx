@@ -50,14 +50,14 @@ const items = [
 export function AppSidebar() {
     return (
         <Sidebar>
-            <SidebarContent>
+            <SidebarContent className="bg-white text-black">
                 <SidebarGroup>
-                    <SidebarGroupLabel>Si Pak-E</SidebarGroupLabel>
+                    <SidebarGroupLabel className="text-blue-600">Si Pak-E</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {items.map((item) => (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
+                                    <SidebarMenuButton asChild  className="hover:bg-blue-600 hover:text-white">
                                         <a href={item.url}>
                                             <item.icon />
                                             <span>{item.title}</span>
@@ -69,10 +69,10 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
-            <SidebarFooter>
+            <SidebarFooter className="bg-blue-600 text-white">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton asChild>
+                        <SidebarMenuButton asChild className="hover:bg-white hover:text-black">
                             <Link href="/auth/logout">
                                 <LogOut />
                                 Logout

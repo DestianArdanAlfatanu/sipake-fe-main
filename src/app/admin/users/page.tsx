@@ -103,7 +103,7 @@ export default function UserManagementPage() {
                         setEditingUser(null);
                         setShowModal(true);
                     }}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                     <Plus className="h-4 w-4 mr-2" />
                     Add User
@@ -115,12 +115,12 @@ export default function UserManagementPage() {
                 <CardContent className="pt-6">
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2 flex-1">
-                            <Search className="h-5 w-5 text-gray-400" />
+                            <Search className="h-5 w-5 text-blue-600" />
                             <Input
-                                placeholder="Search by username, email, or name..."
+                                placeholder="Search by name, username, or email..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="max-w-md"
+                                className="max-w-md focus:ring-blue-600 focus:border-blue-600 bg-white"
                             />
                         </div>
                         <select
@@ -193,6 +193,7 @@ export default function UserManagementPage() {
                                             <td className="p-4">
                                                 <div className="flex items-center justify-end gap-2">
                                                     <Button
+                                                        className="bg-blue-600 text-black"
                                                         variant="outline"
                                                         size="sm"
                                                         onClick={() => {
@@ -334,6 +335,7 @@ function UserModal({
                             <div>
                                 <label className="block text-sm font-medium mb-2">Username</label>
                                 <Input
+                                    className="border border-blue-300 bg-white"
                                     value={formData.username}
                                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                                     placeholder="username"
@@ -345,6 +347,7 @@ function UserModal({
                             <div>
                                 <label className="block text-sm font-medium mb-2">Email</label>
                                 <Input
+                                    className="border border-blue-300 bg-white"
                                     type="email"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -357,6 +360,7 @@ function UserModal({
                         <div>
                             <label className="block text-sm font-medium mb-2">Full Name</label>
                             <Input
+                                className="border border-blue-300 bg-white"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 placeholder="John Doe"
@@ -368,6 +372,7 @@ function UserModal({
                             <div>
                                 <label className="block text-sm font-medium mb-2">Password</label>
                                 <Input
+                                    className="border border-blue-300 bg-white"
                                     type="password"
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -382,7 +387,7 @@ function UserModal({
                             <select
                                 value={formData.role}
                                 onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
-                                className="w-full border rounded-md px-3 py-2"
+                                className="w-full border border-blue-300 bg-white rounded-md px-3 py-2"
                                 required
                             >
                                 <option value="USER">User</option>
@@ -395,6 +400,7 @@ function UserModal({
                             <div>
                                 <label className="block text-sm font-medium mb-2">Phone Number</label>
                                 <Input
+                                    className="border border-blue-300 bg-white"
                                     value={formData.phoneNumber}
                                     onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
                                     placeholder="081234567890"
@@ -404,6 +410,7 @@ function UserModal({
                             <div>
                                 <label className="block text-sm font-medium mb-2">Address</label>
                                 <Input
+                                    className="border border-blue-300 bg-white"
                                     value={formData.address}
                                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                                     placeholder="City, Country"
@@ -412,10 +419,10 @@ function UserModal({
                         </div>
 
                         <div className="flex gap-2 justify-end pt-4">
-                            <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
+                            <Button className="bg-red-600 text-white border-red-700 hover:text-red-600" type="button" variant="outline" onClick={onClose} disabled={loading}>
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={loading} className="bg-purple-600 hover:bg-purple-700">
+                            <Button type="submit" disabled={loading} className="bg-blue-600 text-white hover:bg-blue-900">
                                 {loading ? 'Saving...' : user ? 'Update User' : 'Create User'}
                             </Button>
                         </div>

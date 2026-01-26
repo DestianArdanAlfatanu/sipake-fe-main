@@ -96,7 +96,7 @@ export default function EngineProblemsPage() {
                         setEditingProblem(null);
                         setShowModal(true);
                     }}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Problem
@@ -107,12 +107,12 @@ export default function EngineProblemsPage() {
             <Card>
                 <CardContent className="pt-6">
                     <div className="flex items-center gap-2">
-                        <Search className="h-5 w-5 text-gray-400" />
+                        <Search className="h-5 w-5 text-blue-600" />
                         <Input
                             placeholder="Search by ID or name..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="max-w-md"
+                            className="max-w-md focus:ring-blue-600 focus:border-blue-600 text-black bg-white"
                         />
                     </div>
                 </CardContent>
@@ -166,6 +166,7 @@ export default function EngineProblemsPage() {
                                             <td className="p-4">
                                                 <div className="flex items-center justify-end gap-2">
                                                     <Button
+                                                        className="bg-blue-500 text-black"
                                                         variant="outline"
                                                         size="sm"
                                                         onClick={() => {
@@ -195,6 +196,7 @@ export default function EngineProblemsPage() {
                     {totalPages > 1 && (
                         <div className="flex items-center justify-center gap-2 mt-6">
                             <Button
+                                className='bg-blue-600 text-white'
                                 variant="outline"
                                 onClick={() => setPage(page - 1)}
                                 disabled={page === 1}
@@ -205,6 +207,7 @@ export default function EngineProblemsPage() {
                                 Page {page} of {totalPages}
                             </span>
                             <Button
+                                className='bg-blue-600 text-white'
                                 variant="outline"
                                 onClick={() => setPage(page + 1)}
                                 disabled={page === totalPages}
@@ -298,24 +301,41 @@ function ProblemModal({
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium mb-2">Problem ID</label>
+                            <label className="block text-sm font-medium mb-2">
+                                Problem ID <span className="text-red-500">*</span>
+                                <span className="text-xs text-gray-500 ml-2">(Format: P01, P02, P111, etc.)</span>
+                            </label>
                             <Input
+                                className="bg-white"
                                 value={formData.id}
                                 onChange={(e) => setFormData({ ...formData, id: e.target.value })}
-                                placeholder="e.g., P01"
+                                placeholder="e.g., P01, P02, P111"
                                 disabled={!!problem}
                                 required
+                                pattern="^P\d{2,3}$"
+                                title="Format: P followed by 2-3 digits (e.g., P01, P111)"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium mb-2">Problem Name</label>
+                            <label className="block text-sm font-medium mb-2">
+                                Problem Name <span className="text-red-500">*</span>
+                                <span className="text-xs text-gray-500 ml-2">(min. 5 characters)</span>
+                            </label>
                             <Input
+                                className="bg-white"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                placeholder="e.g., Mesin Overheat"
+                                placeholder="e.g., Mesin Overheat (minimum 5 characters)"
                                 required
+                                minLength={5}
+                                maxLength={255}
                             />
+                            {formData.name.length > 0 && formData.name.length < 5 && (
+                                <p className="text-xs text-red-500 mt-1">
+                                    Name must be at least 5 characters (current: {formData.name.length})
+                                </p>
+                            )}
                         </div>
 
                         <div>
@@ -332,6 +352,7 @@ function ProblemModal({
                         <div>
                             <label className="block text-sm font-medium mb-2">Image Filename</label>
                             <Input
+                                className="bg-white text-black"
                                 value={formData.pict}
                                 onChange={(e) => setFormData({ ...formData, pict: e.target.value })}
                                 placeholder="e.g., overheat.jpg"
@@ -340,10 +361,10 @@ function ProblemModal({
                         </div>
 
                         <div className="flex gap-2 justify-end pt-4">
-                            <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
+                            <Button className="bg-red-600 text-white border-red-700 hover:text-red-600" type="button" variant="outline" onClick={onClose} disabled={loading}>
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={loading}>
+                            <Button className="bg-blue-600 text-white hover:bg-blue-900" type="submit" disabled={loading}>
                                 {loading ? 'Saving...' : problem ? 'Update' : 'Create'}
                             </Button>
                         </div>

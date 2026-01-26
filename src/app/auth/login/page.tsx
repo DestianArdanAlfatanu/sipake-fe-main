@@ -143,10 +143,10 @@ const LoginPage = () => {
 
     return (
         <>
-            <Card>
+            <Card className="bg-blue-600 border-none shadow-lg">
                 <CardHeader>
-                    <CardTitle>Masuk</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-white">Masuk</CardTitle>
+                    <CardDescription className="text-white/90">
                         Masuk Untuk Selesaikan Masalah BMW E36 Anda
                     </CardDescription>
                 </CardHeader>
@@ -161,16 +161,17 @@ const LoginPage = () => {
                                 name="username"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Username</FormLabel>
+                                        <FormLabel className="text-white">Username</FormLabel>
                                         <FormControl>
                                             <Input
+                                                className="bg-white text-blue-600 placeholder:text-blue-400"
                                                 placeholder="Masukan username anda"
                                                 autoComplete="username"
                                                 disabled={isLoading}
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-white" />
                                     </FormItem>
                                 )}
                             />
@@ -179,9 +180,10 @@ const LoginPage = () => {
                                 name="password"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Password</FormLabel>
+                                        <FormLabel className="text-white">Password</FormLabel>
                                         <FormControl>
                                             <Input
+                                                className="bg-white text-blue-600 placeholder:text-blue-400"
                                                 placeholder="Masukan password anda"
                                                 type="password"
                                                 autoComplete="current-password"
@@ -189,24 +191,26 @@ const LoginPage = () => {
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-white" />
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" disabled={isLoading}>
+                            <Button
+                                type="submit"
+                                disabled={isLoading}
+                                className="bg-white text-blue-600 hover:bg-gray-200 border-none mt-2">
                                 {isLoading ? "Memproses..." : "Masuk"}
                             </Button>
                         </form>
                     </Form>
                 </CardContent>
             </Card>
-            <CardDescription className="text-center">
-                Belum memiliki akun?{" "}
-                <Link href={"/auth/signup"} className="text-white font-medium">
-                    {" "}
+            <p className="text-center mt-4">
+                <span className="text-gray-500">Belum memiliki akun? </span>
+                <Link href={"/auth/signup"} className="text-blue-600 font-semibold hover:text-blue-700">
                     Buat Sekarang
                 </Link>
-            </CardDescription>
+            </p>
         </>
     );
 };

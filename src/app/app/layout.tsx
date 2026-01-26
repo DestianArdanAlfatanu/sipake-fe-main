@@ -10,9 +10,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <SidebarProvider>
             <AppSidebar />
-            <main className="w-full">
-                <header className="flex justify-between items-center w-full p-4 bg-zinc-900 sticky top-0">
-                    <SidebarTrigger />
+            <main className="w-full bg-slate-50">
+                <header className="flex justify-between items-center w-full p-4 bg-blue-600 text-white sticky top-0 shadow-md z-10">
+                    <SidebarTrigger className="text-white hover:bg-blue-700 rounded-md p-2" />
                     <div className="flex items-center">
                         <HeaderAvatar token={token!} />
                     </div>

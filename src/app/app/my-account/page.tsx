@@ -15,66 +15,66 @@ const MyAccountPage = async () => {
 
     return (
         <div className="flex flex-col gap-8">
-            <h1 className="text-4xl text-white font-semibold">Akun Saya</h1>
+            <h1 className="text-4xl text-black font-semibold">Akun Saya</h1>
             <div className="w-full flex-col flex gap-4">
                 <img className="w-[275px] aspect-square object-cover object-top rounded-xl" src={getAssetUrl(user.profilePicture)} alt={`${user.name} foto profil`} />
-                <Card className="bg-white/[.05]">
-                    <CardHeader>
-                        <CardTitle>Informasi Dasar</CardTitle>
+                <Card className="bg-black/[.05]">
+                    <CardHeader className="bg-blue-600">
+                        <CardTitle className="text-white">Informasi Dasar</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex flex-col gap-4">
+                    <CardContent className="flex flex-col gap-4 bg-white">
                         <div className="w-full max-w-xl grid grid-cols-2">
-                            <p className="text-white text-lg">Nama</p>
-                            <p className="text-white text-lg">{user.name}</p>
+                            <p className="text-black text-lg">Nama</p>
+                            <p className="text-black text-lg">{user.name}</p>
                         </div>
                         <div className="w-full max-w-xl grid grid-cols-2">
-                            <p className="text-white text-lg">Seri BMW</p>
-                            <p className="text-white text-lg">
+                            <p className="text-black text-lg">Seri BMW</p>
+                            <p className="text-black text-lg">
                                 {user.carSeries?.series_id || 'N/A'}
                             </p>
                         </div>
                         <div className="w-full max-w-xl grid grid-cols-2">
-                            <p className="text-white text-lg">
+                            <p className="text-black text-lg">
                                 Tahun Produksi BMW
                             </p>
-                            <p className="text-white text-lg">
+                            <p className="text-black text-lg">
                                 {user.carYear?.year || 'N/A'}
                             </p>
                         </div>
                         <div className="w-full max-w-xl grid grid-cols-2">
-                            <p className="text-white text-lg">Kode Mesin BMW</p>
-                            <p className="text-white text-lg">
+                            <p className="text-black text-lg">Kode Mesin BMW</p>
+                            <p className="text-black text-lg">
                                 {user.engineCode?.code || 'N/A'}
                             </p>
                         </div>
                         <div className="w-full max-w-xl grid grid-cols-2">
-                            <p className="text-white text-lg">Nomor Polisi</p>
-                            <p className="text-white text-lg">
+                            <p className="text-black text-lg">Nomor Polisi</p>
+                            <p className="text-black text-lg">
                                 {user.plateNumber}
                             </p>
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="bg-white/[.05]">
-                    <CardHeader>
-                        <CardTitle>Informasi Kontak</CardTitle>
+                <Card className="bg-black/[.05]">
+                    <CardHeader className="bg-blue-600">
+                        <CardTitle className="text-white">Informasi Kontak</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex flex-col gap-4">
+                    <CardContent className="flex flex-col gap-4 bg-white">
                         <div className="w-full max-w-xl grid grid-cols-2">
-                            <p className="text-white text-lg">Email</p>
-                            <p className="text-white text-lg">{user.email}</p>
+                            <p className="text-black text-lg">Email</p>
+                            <p className="text-black text-lg">{user.email}</p>
                         </div>
                         <div className="w-full max-w-xl grid grid-cols-2">
-                            <p className="text-white text-lg">
+                            <p className="text-black text-lg">
                                 Nomor Handphone
                             </p>
-                            <p className="text-white text-lg">
+                            <p className="text-black text-lg">
                                 {user.phoneNumber}
                             </p>
                         </div>
                         <div className="flex items-center">
-                            <p className="text-white text-lg w-[288px]">Alamat</p>
-                            <p className="text-white text-lg w-[576px]">{user.address}</p>
+                            <p className="text-black text-lg w-[288px]">Alamat</p>
+                            <p className="text-black text-lg w-[576px]">{user.address}</p>
                         </div>
                     </CardContent>
                 </Card>

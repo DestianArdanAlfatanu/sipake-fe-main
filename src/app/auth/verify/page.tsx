@@ -54,7 +54,7 @@ const VerifyPage = () => {
         try {
             // Call Next.js API route
             await axios.post("/api/auth/verify", values);
-            
+
             toast({
                 variant: "default",
                 title: "Berhasil",
@@ -64,7 +64,7 @@ const VerifyPage = () => {
         } catch (error) {
             if (isAxiosError(error)) {
                 const responseData = error.response?.data;
-                
+
                 // Handle case when response data exists
                 if (responseData) {
                     const { errors, message } = responseData as {

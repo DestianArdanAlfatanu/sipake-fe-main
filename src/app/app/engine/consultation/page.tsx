@@ -40,7 +40,7 @@ const page = () => {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <Button onClick={() => startConsultation()}>
+                <Button onClick={() => startConsultation()} className="bg-blue-600 hover:bg-blue-700 text-white">
                     Mulai Konsultasi
                 </Button>
             </CardContent>

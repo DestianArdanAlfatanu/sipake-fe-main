@@ -14,39 +14,62 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 10% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    /* Background Colors - Light Slate for main background */
+    --background: 210 40% 98%; /* #F8FAFC - Light Slate */
+    --foreground: 215 25% 15%; /* #1E293B - Dark Slate for text */
+    
+    /* Card Colors - White for cards and containers */
+    --card: 0 0% 100%; /* #FFFFFF - White */
+    --card-foreground: 215 25% 15%; /* #1E293B - Dark Slate */
+    
+    /* Popover Colors */
+    --popover: 0 0% 100%; /* #FFFFFF - White */
+    --popover-foreground: 215 25% 15%; /* #1E293B - Dark Slate */
+    
+    /* Primary Colors - Royal Blue */
+    --primary: 217 91% 60%; /* #2563EB - Royal Blue */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF - White text on blue */
+    
+    /* Secondary Colors - White */
+    --secondary: 0 0% 100%; /* #FFFFFF - White */
+    --secondary-foreground: 217 91% 60%; /* #2563EB - Blue text on white */
+    
+    /* Muted Colors */
+    --muted: 210 40% 96%; /* Lighter slate for muted backgrounds */
+    --muted-foreground: 215 16% 47%; /* Medium slate for muted text */
+    
+    /* Accent Colors - Using blue theme */
+    --accent: 217 91% 95%; /* Very light blue for accents */
+    --accent-foreground: 217 91% 60%; /* #2563EB - Royal Blue */
+    
+    /* Destructive Colors - Keep red for errors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Border and Input Colors */
+    --border: 214 32% 91%; /* Light blue-gray border */
+    --input: 214 32% 91%; /* Light blue-gray for inputs */
+    --ring: 217 91% 60%; /* #2563EB - Royal Blue for focus rings */
+    
+    /* Chart Colors - Blue themed */
+    --chart-1: 217 91% 60%; /* Royal Blue */
+    --chart-2: 199 89% 48%; /* Lighter Blue */
+    --chart-3: 188 94% 43%; /* Cyan Blue */
+    --chart-4: 205 87% 29%; /* Dark Blue */
+    --chart-5: 221 83% 53%; /* Medium Blue */
+    
+    /* Border Radius */
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Sidebar Colors - Royal Blue background with white text */
+    --sidebar-background: 217 91% 60%; /* #2563EB - Royal Blue */
+    --sidebar-foreground: 0 0% 100%; /* #FFFFFF - White text */
+    --sidebar-primary: 0 0% 100%; /* White for primary items */
+    --sidebar-primary-foreground: 217 91% 60%; /* Blue text */
+    --sidebar-accent: 217 91% 50%; /* Darker blue for hover */
+    --sidebar-accent-foreground: 0 0% 100%; /* White text on hover */
+    --sidebar-border: 217 91% 70%; /* Lighter blue border */
+    --sidebar-ring: 217 91% 60%; /* Royal Blue */
   }
   .dark {
     --background: 240 10% 3.9%;

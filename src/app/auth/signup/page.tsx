@@ -179,10 +179,10 @@ const RegisterPage = () => {
     };
     return (
         <>
-            <Card className="min-w-[700px]">
+            <Card className="min-w-[700px] bg-blue-600 border-none shadow-lg">
                 <CardHeader>
-                    <CardTitle>Registrasi</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-white">Registrasi</CardTitle>
+                    <CardDescription className="text-white/90">
                         Daftar Sekarang Lalu Selesaikan Masalah BMW E36 Anda
                         Bersama Pakar Kami
                     </CardDescription>
@@ -205,6 +205,7 @@ const RegisterPage = () => {
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
+                                                        className="text-white"
                                                         placeholder="Masukan nama anda"
                                                         {...field}
                                                     />
@@ -221,6 +222,7 @@ const RegisterPage = () => {
                                                 <FormLabel>Username</FormLabel>
                                                 <FormControl>
                                                     <Input
+                                                        className="text-white"
                                                         placeholder="Masukan username anda"
                                                         {...field}
                                                     />
@@ -237,6 +239,7 @@ const RegisterPage = () => {
                                                 <FormLabel>Email</FormLabel>
                                                 <FormControl>
                                                     <Input
+                                                        className="text-white"
                                                         placeholder="Masukan email anda"
                                                         type="email"
                                                         {...field}
@@ -254,6 +257,7 @@ const RegisterPage = () => {
                                                 <FormLabel>Password</FormLabel>
                                                 <FormControl>
                                                     <Input
+                                                        className="text-white"
                                                         placeholder="Masukan password anda"
                                                         type="password"
                                                         {...field}
@@ -273,6 +277,7 @@ const RegisterPage = () => {
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
+                                                        className="text-white"
                                                         placeholder="Masukan password anda lagi"
                                                         type="password"
                                                         {...field}
@@ -290,6 +295,7 @@ const RegisterPage = () => {
                                                 <FormLabel>Nomor HP</FormLabel>
                                                 <FormControl>
                                                     <Input
+                                                        className="text-white"
                                                         placeholder="Masukan nomor hp anda"
                                                         type="text"
                                                         {...field}
@@ -307,6 +313,7 @@ const RegisterPage = () => {
                                                 <FormLabel>Alamat</FormLabel>
                                                 <FormControl>
                                                     <Textarea
+                                                        className="text-white"
                                                         placeholder="Masukan alamat anda"
                                                         {...field}
                                                     />
@@ -336,7 +343,7 @@ const RegisterPage = () => {
                                                         }
                                                         {...field}
                                                     >
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className="text-white">
                                                             <SelectValue placeholder="Pilih Seri BMW" />
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -378,7 +385,7 @@ const RegisterPage = () => {
                                                         }
                                                         {...field}
                                                     >
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className="text-white">
                                                             <SelectValue placeholder="Pilih Tahun Produksi BMW" />
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -420,7 +427,7 @@ const RegisterPage = () => {
                                                         }
                                                         {...field}
                                                     >
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className="text-white">
                                                             <SelectValue placeholder="Pilih Kode Mesin BMW" />
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -453,6 +460,7 @@ const RegisterPage = () => {
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
+                                                        className="text-white"
                                                         placeholder="Masukan plat nomor mobil anda"
                                                         {...field}
                                                     />
@@ -478,6 +486,7 @@ const RegisterPage = () => {
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
+                                                        className="text-white"
                                                         type="file"
                                                         accept="image/*"
                                                         onChange={(e) => {
@@ -501,18 +510,17 @@ const RegisterPage = () => {
                                 </aside>
                             </div>
 
-                            <Button type="submit">Registrasi</Button>
+                            <Button type="submit" className="bg-white text-blue-600 hover:bg-gray-200 border-none mt-2">Registrasi</Button>
                         </form>
                     </Form>
                 </CardContent>
             </Card>
-            <CardDescription className="text-center">
-                Sudah memiliki akun?{" "}
-                <Link href={"/auth/login"} className="text-white font-medium">
-                    {" "}
+            <p className="text-center mt-4">
+                <span className="text-gray-500">Sudah memiliki akun? </span>
+                <Link href={"/auth/login"} className="text-blue-600 font-semibold hover:text-blue-700">
                     Login Sekarang
                 </Link>
-            </CardDescription>
+            </p>
         </>
     );
 };

@@ -90,7 +90,7 @@ export default function EngineSymptomsPage() {
                         setEditingSymptom(null);
                         setShowModal(true);
                     }}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Symptom
@@ -100,12 +100,12 @@ export default function EngineSymptomsPage() {
             <Card>
                 <CardContent className="pt-6">
                     <div className="flex items-center gap-2">
-                        <Search className="h-5 w-5 text-gray-400" />
+                        <Search className="h-5 w-5 text-blue-600" />
                         <Input
                             placeholder="Search by ID or name..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="max-w-md"
+                            className="max-w-md focus:ring-blue-600 focus:border-blue-600 bg-white"
                         />
                     </div>
                 </CardContent>
@@ -150,6 +150,7 @@ export default function EngineSymptomsPage() {
                                             <td className="p-4">
                                                 <div className="flex items-center justify-end gap-2">
                                                     <Button
+                                                        className="bg-blue-500 text-black"
                                                         variant="outline"
                                                         size="sm"
                                                         onClick={() => {
@@ -178,6 +179,7 @@ export default function EngineSymptomsPage() {
                     {totalPages > 1 && (
                         <div className="flex items-center justify-center gap-2 mt-6">
                             <Button
+                                className="bg-blue-600 text-white"
                                 variant="outline"
                                 onClick={() => setPage(page - 1)}
                                 disabled={page === 1}
@@ -188,6 +190,7 @@ export default function EngineSymptomsPage() {
                                 Page {page} of {totalPages}
                             </span>
                             <Button
+                                className="bg-blue-600 text-white"
                                 variant="outline"
                                 onClick={() => setPage(page + 1)}
                                 disabled={page === totalPages}
@@ -276,24 +279,41 @@ function SymptomModal({
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium mb-2">Symptom ID</label>
+                            <label className="block text-sm font-medium mb-2">
+                                Symptom ID <span className="text-red-500">*</span>
+                                <span className="text-xs text-gray-500 ml-2">(Format: G01, G02, G111, etc.)</span>
+                            </label>
                             <Input
+                                className="w-full border rounded-md p-2 bg-white"
                                 value={formData.id}
                                 onChange={(e) => setFormData({ ...formData, id: e.target.value })}
-                                placeholder="e.g., G01"
+                                placeholder="e.g., G01, G02, G111"
                                 disabled={!!symptom}
                                 required
+                                pattern="^G\d{2,3}$"
+                                title="Format: G followed by 2-3 digits (e.g., G01, G111)"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium mb-2">Symptom Name</label>
+                            <label className="block text-sm font-medium mb-2">
+                                Symptom Name <span className="text-red-500">*</span>
+                                <span className="text-xs text-gray-500 ml-2">(min. 5 characters)</span>
+                            </label>
                             <Input
+                                className="w-full border rounded-md p-2 bg-white"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                placeholder="e.g., Suara Mesin Kasar"
+                                placeholder="e.g., Suara Mesin Kasar (minimum 5 characters)"
                                 required
+                                minLength={5}
+                                maxLength={255}
                             />
+                            {formData.name.length > 0 && formData.name.length < 5 && (
+                                <p className="text-xs text-red-500 mt-1">
+                                    Name must be at least 5 characters (current: {formData.name.length})
+                                </p>
+                            )}
                         </div>
 
                         <div>
@@ -308,10 +328,10 @@ function SymptomModal({
                         </div>
 
                         <div className="flex gap-2 justify-end pt-4">
-                            <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
+                            <Button className="bg-red-600 text-white border-red-700 hover:text-red-600" type="button" variant="outline" onClick={onClose} disabled={loading}>
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={loading}>
+                            <Button className="bg-blue-600 text-white hover:bg-blue-900" type="submit" disabled={loading}>
                                 {loading ? 'Saving...' : symptom ? 'Update' : 'Create'}
                             </Button>
                         </div>

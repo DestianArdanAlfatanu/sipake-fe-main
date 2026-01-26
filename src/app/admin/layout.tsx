@@ -93,7 +93,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
 
     return (
-        <div className="flex h-screen bg-gray-50">
+        <div className="flex h-screen bg-slate-50">
             {/* Sidebar */}
             <aside
                 className={`${sidebarOpen ? 'w-64' : 'w-20'
@@ -213,7 +213,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                                 onClick={handleLogout}
                                 variant="outline"
                                 size="sm"
-                                className="w-full text-white border-blue-600 hover:bg-blue-700"
+                                className="w-full bg-white text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white"
                             >
                                 <LogOut size={16} className="mr-2" />
                                 Logout
@@ -243,7 +243,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                             </p>
                         </div>
                         <div className="flex items-center gap-4">
-                            <Badge variant="outline" className="text-sm">
+                            <Badge variant="outline" className="text-sm bg-blue-600 text-white">
                                 {user?.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Expert'}
                             </Badge>
                         </div>
