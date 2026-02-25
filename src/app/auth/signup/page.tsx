@@ -179,10 +179,10 @@ const RegisterPage = () => {
     };
     return (
         <>
-            <Card className="min-w-[700px] bg-blue-600 border-none shadow-lg">
+            <Card className="min-w-[700px] bg-white border-none shadow-lg">
                 <CardHeader>
-                    <CardTitle className="text-white">Registrasi</CardTitle>
-                    <CardDescription className="text-white/90">
+                    <CardTitle className="text-blue-600">Registrasi</CardTitle>
+                    <CardDescription className="text-blue-600/90">
                         Daftar Sekarang Lalu Selesaikan Masalah BMW E36 Anda
                         Bersama Pakar Kami
                     </CardDescription>
@@ -200,12 +200,12 @@ const RegisterPage = () => {
                                         name="name"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>
+                                                <FormLabel className="text-blue-600">
                                                     Nama Lengkap
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        className="text-white"
+                                                        className="bg-white text-blue-600 placeholder:text-blue-600"
                                                         placeholder="Masukan nama anda"
                                                         {...field}
                                                     />
@@ -219,10 +219,10 @@ const RegisterPage = () => {
                                         name="username"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Username</FormLabel>
+                                                <FormLabel className="text-blue-600">Username</FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        className="text-white"
+                                                        className="bg-white text-blue-600 placeholder:text-blue-600"
                                                         placeholder="Masukan username anda"
                                                         {...field}
                                                     />
@@ -236,10 +236,10 @@ const RegisterPage = () => {
                                         name="email"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Email</FormLabel>
+                                                <FormLabel className="text-blue-600">Email</FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        className="text-white"
+                                                        className="bg-white text-blue-600 placeholder:text-blue-600"
                                                         placeholder="Masukan email anda"
                                                         type="email"
                                                         {...field}
@@ -254,10 +254,10 @@ const RegisterPage = () => {
                                         name="password"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Password</FormLabel>
+                                                <FormLabel className="text-blue-600">Password</FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        className="text-white"
+                                                        className="bg-white text-blue-600 placeholder:text-blue-600"
                                                         placeholder="Masukan password anda"
                                                         type="password"
                                                         {...field}
@@ -272,12 +272,12 @@ const RegisterPage = () => {
                                         name="password_confirmation"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>
+                                                <FormLabel className="text-blue-600">
                                                     Konfirmasi Password
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        className="text-white"
+                                                        className="bg-white text-blue-600 placeholder:text-blue-600"
                                                         placeholder="Masukan password anda lagi"
                                                         type="password"
                                                         {...field}
@@ -292,10 +292,10 @@ const RegisterPage = () => {
                                         name="phoneNumber"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Nomor HP</FormLabel>
+                                                <FormLabel className="text-blue-600">Nomor HP</FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        className="text-white"
+                                                        className="bg-white text-blue-600 placeholder:text-blue-600"
                                                         placeholder="Masukan nomor hp anda"
                                                         type="text"
                                                         {...field}
@@ -310,10 +310,10 @@ const RegisterPage = () => {
                                         name="address"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Alamat</FormLabel>
+                                                <FormLabel className="text-blue-600">Alamat</FormLabel>
                                                 <FormControl>
                                                     <Textarea
-                                                        className="text-white"
+                                                        className="bg-white text-blue-600 placeholder:text-blue-600"
                                                         placeholder="Masukan alamat anda"
                                                         {...field}
                                                     />
@@ -329,7 +329,7 @@ const RegisterPage = () => {
                                         name="car_series_id"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>
+                                                <FormLabel className="text-blue-600">
                                                     Pilih Seri
                                                 </FormLabel>
                                                 <FormControl>
@@ -343,17 +343,16 @@ const RegisterPage = () => {
                                                         }
                                                         {...field}
                                                     >
-                                                        <SelectTrigger className="text-white">
+                                                        <SelectTrigger className="bg-white text-blue-600 border-blue-600">
                                                             <SelectValue placeholder="Pilih Seri BMW" />
                                                         </SelectTrigger>
-                                                        <SelectContent>
+                                                        <SelectContent className="bg-white text-blue-600 border-blue-600">
                                                             {carSeries.map(
                                                                 (item) => (
                                                                     <SelectItem
                                                                         key={item}
-                                                                        value={
-                                                                            item
-                                                                        }
+                                                                        value={item}
+                                                                        className="text-blue-600 focus:bg-blue-700"
                                                                     >
                                                                         {item}
                                                                     </SelectItem>
@@ -371,7 +370,7 @@ const RegisterPage = () => {
                                         name="car_year"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>
+                                                <FormLabel className="text-blue-600">
                                                     Pilih Tahun Produksi BMW
                                                 </FormLabel>
                                                 <FormControl>
@@ -385,17 +384,16 @@ const RegisterPage = () => {
                                                         }
                                                         {...field}
                                                     >
-                                                        <SelectTrigger className="text-white">
+                                                        <SelectTrigger className="bg-white text-blue-600 border-blue-600">
                                                             <SelectValue placeholder="Pilih Tahun Produksi BMW" />
                                                         </SelectTrigger>
-                                                        <SelectContent>
+                                                        <SelectContent className="bg-white text-blue-600 border-blue-600">
                                                             {carYears.map(
                                                                 (item) => (
                                                                     <SelectItem
                                                                         key={item}
-                                                                        value={
-                                                                            item
-                                                                        }
+                                                                        value={item}
+                                                                        className="text-blue-600 focus:bg-blue-700"
                                                                     >
                                                                         {item}
                                                                     </SelectItem>
@@ -413,7 +411,7 @@ const RegisterPage = () => {
                                         name="engine_code"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>
+                                                <FormLabel className="text-blue-600">
                                                     Pilih Kode Mesin BMW
                                                 </FormLabel>
                                                 <FormControl>
@@ -427,17 +425,16 @@ const RegisterPage = () => {
                                                         }
                                                         {...field}
                                                     >
-                                                        <SelectTrigger className="text-white">
+                                                        <SelectTrigger className="bg-white text-blue-600 border-blue-600">
                                                             <SelectValue placeholder="Pilih Kode Mesin BMW" />
                                                         </SelectTrigger>
-                                                        <SelectContent>
+                                                        <SelectContent className="bg-white text-blue-600 border-blue-600">
                                                             {engineCodes.map(
                                                                 (item) => (
                                                                     <SelectItem
                                                                         key={item}
-                                                                        value={
-                                                                            item
-                                                                        }
+                                                                        value={item}
+                                                                        className="text-blue-600 focus:bg-blue-700"
                                                                     >
                                                                         {item}
                                                                     </SelectItem>
@@ -455,12 +452,12 @@ const RegisterPage = () => {
                                         name="plateNumber"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>
+                                                <FormLabel className="text-blue-600">
                                                     Plat Nomor
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        className="text-white"
+                                                        className="bg-white text-blue-600 placeholder:text-blue-600"
                                                         placeholder="Masukan plat nomor mobil anda"
                                                         {...field}
                                                     />
@@ -481,12 +478,12 @@ const RegisterPage = () => {
                                             },
                                         }) => (
                                             <FormItem>
-                                                <FormLabel>
+                                                <FormLabel className="text-blue-600">
                                                     Foto Akun Anda
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        className="text-white"
+                                                        className="bg-white text-blue-600 file:text-blue-600 file:font-semibold"
                                                         type="file"
                                                         accept="image/*"
                                                         onChange={(e) => {
@@ -510,7 +507,7 @@ const RegisterPage = () => {
                                 </aside>
                             </div>
 
-                            <Button type="submit" className="bg-white text-blue-600 hover:bg-gray-200 border-none mt-2">Registrasi</Button>
+                            <Button type="submit" className="bg-blue-600 text-white hover:bg-blue-700 border-none mt-2">Registrasi</Button>
                         </form>
                     </Form>
                 </CardContent>

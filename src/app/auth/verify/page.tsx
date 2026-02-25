@@ -109,8 +109,8 @@ const VerifyPage = () => {
         <>
             <Card>
                 <CardHeader>
-                    <CardTitle>Verifikasi Email</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-blue-600">Verifikasi Email</CardTitle>
+                    <CardDescription className="text-blue-600">
                         Masukkan kode verifikasi yang telah dikirim ke email Anda
                     </CardDescription>
                 </CardHeader>
@@ -125,12 +125,13 @@ const VerifyPage = () => {
                                 name="username"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Username</FormLabel>
+                                        <FormLabel className="text-blue-600">Username</FormLabel>
                                         <FormControl>
                                             <Input
                                                 placeholder="Masukan username anda"
                                                 {...field}
                                                 readOnly
+                                                className="bg-white text-blue-600 border-blue-600"
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -142,26 +143,27 @@ const VerifyPage = () => {
                                 name="code"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Kode Verifikasi</FormLabel>
+                                        <FormLabel className="text-blue-600">Kode Verifikasi</FormLabel>
                                         <FormControl>
                                             <Input
                                                 placeholder="Masukan kode 6 digit"
                                                 maxLength={6}
                                                 {...field}
+                                                className="bg-white text-blue-600 border-blue-600"
                                             />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit">Verifikasi</Button>
+                            <Button type="submit" className="bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:border-blue-700">Verifikasi</Button>
                         </form>
                     </Form>
                 </CardContent>
             </Card>
             <CardDescription className="text-center">
                 Sudah verifikasi?{" "}
-                <Link href={"/auth/login"} className="text-white font-medium">
+                <Link href={"/auth/login"} className="text-blue-600 hover:text-blue-700 font-medium">
                     Login Sekarang
                 </Link>
             </CardDescription>

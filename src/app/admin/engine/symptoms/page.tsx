@@ -281,17 +281,17 @@ function SymptomModal({
                         <div>
                             <label className="block text-sm font-medium mb-2">
                                 Symptom ID <span className="text-red-500">*</span>
-                                <span className="text-xs text-gray-500 ml-2">(Format: G01, G02, G111, etc.)</span>
+                                <span className="text-xs text-gray-500 ml-2">(Format: GE01, GE02, GE111, etc.)</span>
                             </label>
                             <Input
                                 className="w-full border rounded-md p-2 bg-white"
                                 value={formData.id}
                                 onChange={(e) => setFormData({ ...formData, id: e.target.value })}
-                                placeholder="e.g., G01, G02, G111"
+                                placeholder="e.g., GE01, GE02, GE111"
                                 disabled={!!symptom}
                                 required
-                                pattern="^G\d{2,3}$"
-                                title="Format: G followed by 2-3 digits (e.g., G01, G111)"
+                                pattern="^GE\d{2,3}$"
+                                title="Format: GE followed by 2-3 digits (e.g., GE01, GE111)"
                             />
                         </div>
 

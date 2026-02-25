@@ -10,7 +10,7 @@ import axios from '@/lib/axios';
 interface Symptom {
     id: string;
     name: string;
-    question: string;
+    description?: string;
 }
 
 export default function SuspensionSymptomsPage() {
@@ -123,7 +123,7 @@ export default function SuspensionSymptomsPage() {
                                 <tr className="border-b">
                                     <th className="text-left p-4 font-semibold">ID</th>
                                     <th className="text-left p-4 font-semibold">Name</th>
-                                    <th className="text-left p-4 font-semibold">Question</th>
+                                    <th className="text-left p-4 font-semibold">Description</th>
                                     <th className="text-right p-4 font-semibold">Actions</th>
                                 </tr>
                             </thead>
@@ -145,7 +145,7 @@ export default function SuspensionSymptomsPage() {
                                             </td>
                                             <td className="p-4 font-medium">{symptom.name}</td>
                                             <td className="p-4 text-sm text-gray-600 max-w-md truncate">
-                                                {symptom.question}
+                                                {symptom.description || '-'}
                                             </td>
                                             <td className="p-4">
                                                 <div className="flex items-center justify-end gap-2">
@@ -232,7 +232,7 @@ function SymptomModal({
     const [formData, setFormData] = useState({
         id: symptom?.id || '',
         name: symptom?.name || '',
-        question: symptom?.question || '',
+        description: symptom?.description || '',
     });
     const [loading, setLoading] = useState(false);
 
@@ -302,13 +302,12 @@ function SymptomModal({
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium mb-2">Question</label>
+                            <label className="block text-sm font-medium mb-2">Description (Optional)</label>
                             <textarea
                                 className="w-full border rounded-md p-2 min-h-[100px]"
-                                value={formData.question}
-                                onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-                                placeholder="e.g., Apakah mobil terasa goyang saat dikendarai?"
-                                required
+                                value={formData.description}
+                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                placeholder="e.g., Gejala yang muncul saat mobil dikendarai di jalan rusak"
                             />
                         </div>
 

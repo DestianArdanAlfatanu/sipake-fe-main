@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Search, Edit, Trash2, AlertCircle } from 'lucide-react';
 import axios from '@/lib/axios';
 
@@ -253,6 +254,7 @@ function ProblemModal({
         name: problem?.name || '',
         description: problem?.description || '',
         pict: problem?.pict || '',
+        solution: problem?.solution?.solution || '',
     });
     const [loading, setLoading] = useState(false);
 
@@ -303,17 +305,17 @@ function ProblemModal({
                         <div>
                             <label className="block text-sm font-medium mb-2">
                                 Problem ID <span className="text-red-500">*</span>
-                                <span className="text-xs text-gray-500 ml-2">(Format: P01, P02, P111, etc.)</span>
+                                <span className="text-xs text-gray-500 ml-2">(Format: PE01, PE02, PE111, etc.)</span>
                             </label>
                             <Input
                                 className="bg-white"
                                 value={formData.id}
                                 onChange={(e) => setFormData({ ...formData, id: e.target.value })}
-                                placeholder="e.g., P01, P02, P111"
+                                placeholder="e.g., PE01, PE02, PE111"
                                 disabled={!!problem}
                                 required
-                                pattern="^P\d{2,3}$"
-                                title="Format: P followed by 2-3 digits (e.g., P01, P111)"
+                                pattern="^PE\d{2,3}$"
+                                title="Format: PE followed by 2-3 digits (e.g., PE01, PE111)"
                             />
                         </div>
 
@@ -358,6 +360,24 @@ function ProblemModal({
                                 placeholder="e.g., overheat.jpg"
                                 required
                             />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Solution</label>
+                            <Select
+                                value={formData.solution}
+                                onValueChange={(value) => setFormData({ ...formData, solution: value })}
+                            >
+                                <SelectTrigger className="bg-white text-black">
+                                    <SelectValue placeholder="Pilih solusi" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Wajib Ganti Baru">Wajib Ganti Baru</SelectItem>
+                                    <SelectItem value="Service/Rekondisi">Service/Rekondisi</SelectItem>
+                                    <SelectItem value="Perlu Penyetelan (Spooring/Balancing)">Perlu Penyetelan (Spooring/Balancing)</SelectItem>
+                                    <SelectItem value="Cek Fisik Dulu">Cek Fisik Dulu</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         <div className="flex gap-2 justify-end pt-4">

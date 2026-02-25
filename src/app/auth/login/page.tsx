@@ -143,10 +143,10 @@ const LoginPage = () => {
 
     return (
         <>
-            <Card className="bg-blue-600 border-none shadow-lg">
+            <Card className="bg-white border-none shadow-lg">
                 <CardHeader>
-                    <CardTitle className="text-white">Masuk</CardTitle>
-                    <CardDescription className="text-white/90">
+                    <CardTitle className="text-blue-600">Masuk</CardTitle>
+                    <CardDescription className="text-blue-600/90">
                         Masuk Untuk Selesaikan Masalah BMW E36 Anda
                     </CardDescription>
                 </CardHeader>
@@ -161,17 +161,17 @@ const LoginPage = () => {
                                 name="username"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-white">Username</FormLabel>
+                                        <FormLabel className="text-blue-600">Username</FormLabel>
                                         <FormControl>
                                             <Input
-                                                className="bg-white text-blue-600 placeholder:text-blue-400"
+                                                className="bg-white text-blue-600 placeholder:text-blue-600"
                                                 placeholder="Masukan username anda"
                                                 autoComplete="username"
                                                 disabled={isLoading}
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage className="text-white" />
+                                        <FormMessage className="text-blue-600" />
                                     </FormItem>
                                 )}
                             />
@@ -180,10 +180,10 @@ const LoginPage = () => {
                                 name="password"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-white">Password</FormLabel>
+                                        <FormLabel className="text-blue-600">Password</FormLabel>
                                         <FormControl>
                                             <Input
-                                                className="bg-white text-blue-600 placeholder:text-blue-400"
+                                                className="bg-white text-blue-600 placeholder:text-blue-600"
                                                 placeholder="Masukan password anda"
                                                 type="password"
                                                 autoComplete="current-password"
@@ -191,14 +191,14 @@ const LoginPage = () => {
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage className="text-white" />
+                                        <FormMessage className="text-blue-600" />
                                     </FormItem>
                                 )}
                             />
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="bg-white text-blue-600 hover:bg-gray-200 border-none mt-2">
+                                className="bg-blue-600 text-white hover:bg-blue-700 border-none mt-2">
                                 {isLoading ? "Memproses..." : "Masuk"}
                             </Button>
                         </form>

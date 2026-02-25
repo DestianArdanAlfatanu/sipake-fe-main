@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Search, Edit, Trash2, AlertCircle } from 'lucide-react';
 import axios from '@/lib/axios';
 
@@ -247,6 +248,7 @@ function ProblemModal({
         name: problem?.name || '',
         description: problem?.description || '',
         pict: problem?.pict || '',
+        solution: problem?.solution?.solution || '',
     });
     const [loading, setLoading] = useState(false);
 
@@ -335,6 +337,24 @@ function ProblemModal({
                                 placeholder="e.g., shock-bocor.jpg"
                                 required
                             />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Solution</label>
+                            <Select
+                                value={formData.solution}
+                                onValueChange={(value) => setFormData({ ...formData, solution: value })}
+                            >
+                                <SelectTrigger className="bg-white text-black">
+                                    <SelectValue placeholder="Pilih solusi" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Wajib Ganti Baru">Wajib Ganti Baru</SelectItem>
+                                    <SelectItem value="Service/Rekondisi">Service/Rekondisi</SelectItem>
+                                    <SelectItem value="Perlu Penyetelan (Spooring/Balancing)">Perlu Penyetelan (Spooring/Balancing)</SelectItem>
+                                    <SelectItem value="Cek Fisik Dulu">Cek Fisik Dulu</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         <div className="flex gap-2 justify-end pt-4">

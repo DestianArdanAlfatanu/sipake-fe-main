@@ -41,8 +41,11 @@ export default function UserManagementPage() {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            // ResponseInterceptor wraps response: { data: { data: [...], meta: {...} } }
-            setUsers(response.data.data.data || []);
+            // Parse response - handle different response structures
+            const res = response.data;
+            const raw = res?.data?.data || res?.data || res || [];
+            const usersArr = Array.isArray(raw) ? raw : [];
+            setUsers(usersArr);
             setLoading(false);
         } catch (error) {
             console.error('Failed to fetch users:', error);

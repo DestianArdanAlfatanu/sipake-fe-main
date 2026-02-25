@@ -24,10 +24,10 @@ interface ProblemRanking {
         name: string;
         description: string;
         picture: string;
-        solution: {
-            id: string;
-            name: string;
-        };
+        solution?: {
+            id: number;
+            solution: string;
+        } | null;
     };
     certainty: number;
     percentage: string;
@@ -46,10 +46,10 @@ interface ConsultResult {
             name: string;
             description: string;
             picture: string;
-            solution: {
-                id: string;
-                name: string;
-            };
+            solution?: {
+                id: number;
+                solution: string;
+            } | null;
         };
     };
 }
@@ -245,12 +245,16 @@ const ConsultationProcessComp: React.FC<Props> = ({ token, apiBaseUrl, historyRo
                                                             <h4 className="font-semibold text-lg mb-2">
                                                                 Solusi Yang Disarankan
                                                             </h4>
-                                                            <p
-                                                                className="text-muted-foreground"
-                                                                dangerouslySetInnerHTML={{
-                                                                    __html: ranking.problem.solution.name,
-                                                                }}
-                                                            />
+                                                            {ranking.problem.solution?.solution ? (
+                                                                <p
+                                                                    className="text-muted-foreground"
+                                                                    dangerouslySetInnerHTML={{
+                                                                        __html: ranking.problem.solution.solution,
+                                                                    }}
+                                                                />
+                                                            ) : (
+                                                                <p className="text-muted-foreground italic">Solusi belum tersedia untuk masalah ini.</p>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </CardContent>

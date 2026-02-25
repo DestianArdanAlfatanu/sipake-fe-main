@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { LayoutDashboard, AlertCircle, Activity, GitBranch, Users, LogOut, Menu, X } from 'lucide-react';
 import axios from '@/lib/axios';
 import { Button } from '@/components/ui/button';
@@ -272,7 +272,8 @@ function NavItem({
     collapsed: boolean;
 }) {
     const router = useRouter();
-    const isActive = typeof window !== 'undefined' && window.location.pathname === href;
+    const pathname = usePathname();
+    const isActive = pathname === href || (href !== '/admin' && pathname.startsWith(href));
 
     return (
         <button
