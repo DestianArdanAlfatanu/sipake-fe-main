@@ -31,9 +31,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { countryCodes } from "@/lib/country-codes";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -63,19 +64,114 @@ const formSchema = z.object({
         .string({ required_error: "Plat nomor harus diisi" })
         .min(1, { message: "Plat nomor harus diisi" }),
     car_year: z.string({ required_error: "Harus Pilih salah satu" }),
-    car_series_id: z.string({ required_error: "Harus Pilih salah satu" }),
     engine_code: z.string({ required_error: "Harus Pilih salah satu" }),
-    profilePicture: z.custom<File>((value) => value !== null, {
-        message: "Foto akun harus diisi",
-    }),
+    profilePicture: z.custom<File>().optional(),
 });
 
 type Schema = z.infer<typeof formSchema>;
 
+/* Required label helper */
+function RequiredLabel({ children }: { children: React.ReactNode }) {
+    return (
+        <span className="text-blue-600">
+            {children} <span className="text-blue-500">*</span>
+        </span>
+    );
+}
+
+/* Country Code Dropdown */
+function CountryCodeSelect({
+    value,
+    onChange,
+}: {
+    value: string;
+    onChange: (val: string) => void;
+}) {
+    const [open, setOpen] = useState(false);
+    const [search, setSearch] = useState("");
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const selected = countryCodes.find((c) => c.dial === value);
+
+    const filtered = useMemo(() => {
+        if (!search) return countryCodes;
+        const q = search.toLowerCase();
+        return countryCodes.filter(
+            (c) =>
+                c.name.toLowerCase().includes(q) ||
+                c.dial.includes(q) ||
+                c.code.toLowerCase().includes(q)
+        );
+    }, [search]);
+
+    // Close on outside click
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, []);
+
+    return (
+        <div className="relative" ref={dropdownRef}>
+            <button
+                type="button"
+                onClick={() => { setOpen(!open); setSearch(""); }}
+                className="flex items-center gap-1.5 h-10 px-2.5 border border-blue-600 rounded-l-md bg-blue-50 text-blue-700 text-sm font-medium hover:bg-blue-100 transition-colors min-w-[100px] justify-center"
+            >
+                <span className="text-base">{selected?.flag || "🌍"}</span>
+                <span>{value}</span>
+                <svg className="h-3.5 w-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+
+            {open && (
+                <div className="absolute top-full left-0 mt-1 w-72 bg-white border border-blue-200 rounded-lg shadow-xl z-50 overflow-hidden">
+                    {/* Search */}
+                    <div className="p-2 border-b border-blue-100">
+                        <input
+                            type="text"
+                            placeholder="Cari negara..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-full px-3 py-2 text-sm border border-blue-200 rounded-md bg-blue-50/50 text-blue-700 placeholder:text-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                            autoFocus
+                        />
+                    </div>
+                    {/* List */}
+                    <div className="max-h-52 overflow-y-auto">
+                        {filtered.length === 0 ? (
+                            <p className="text-center text-sm text-gray-400 py-4">Tidak ditemukan</p>
+                        ) : (
+                            filtered.map((c) => (
+                                <button
+                                    key={c.code + c.dial}
+                                    type="button"
+                                    onClick={() => { onChange(c.dial); setOpen(false); }}
+                                    className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-blue-50 transition-colors ${c.dial === value ? "bg-blue-50 font-semibold text-blue-700" : "text-gray-700"
+                                        }`}
+                                >
+                                    <span className="text-base">{c.flag}</span>
+                                    <span className="flex-1 text-left truncate">{c.name}</span>
+                                    <span className="text-xs text-blue-500 font-mono">{c.dial}</span>
+                                </button>
+                            ))
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
 const RegisterPage = () => {
     const [engineCodes, setEngineCodes] = useState<string[]>([]);
     const [carYears, setCarYears] = useState<string[]>([]);
-    const [carSeries, setCarSeries] = useState<string[]>([]);
+    const [countryDial, setCountryDial] = useState("+62"); // Default Indonesia
     const form = useForm<Schema>({
         resolver: zodResolver(formSchema),
     });
@@ -85,7 +181,6 @@ const RegisterPage = () => {
     useEffect(() => {
         getEngineCodes();
         getCarYears();
-        getCarSeries();
     }, []);
 
     const getEngineCodes = async () => {
@@ -93,7 +188,6 @@ const RegisterPage = () => {
             const response = await axios.get<Response<{ code: string }[]>>(
                 `${BACKEND_URL}/engine/codes`
             );
-
             setEngineCodes(response.data.data.map((item) => item.code));
         } catch (error) {
             console.error(error);
@@ -105,20 +199,7 @@ const RegisterPage = () => {
             const response = await axios.get<Response<{ year: number }[]>>(
                 `${BACKEND_URL}/car-years`
             );
-
             setCarYears(response.data.data.map((item) => item.year.toString()));
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const getCarSeries = async () => {
-        try {
-            const response = await axios.get<Response<{ series_id: string }[]>>(
-                `${BACKEND_URL}/car-series`
-            );
-
-            setCarSeries(response.data.data.map((item) => item.series_id));
         } catch (error) {
             console.error(error);
         }
@@ -131,19 +212,19 @@ const RegisterPage = () => {
             formData.append("username", values.username);
             formData.append("email", values.email);
             formData.append("password", values.password);
-            formData.append(
-                "password_confirmation",
-                values.password_confirmation
-            );
-            formData.append("phoneNumber", values.phoneNumber);
+            formData.append("password_confirmation", values.password_confirmation);
+            // Combine country dial code + cleaned phone number (strip spaces, dashes, etc.)
+            const cleanPhone = values.phoneNumber.replace(/\D/g, "");
+            formData.append("phoneNumber", `${countryDial}${cleanPhone}`);
             formData.append("address", values.address);
             formData.append("plateNumber", values.plateNumber);
             formData.append("car_year", values.car_year);
-            formData.append("car_series_id", values.car_series_id);
+            formData.append("car_series_id", "E36"); // Hardcoded — only BMW E36
             formData.append("engine_code", values.engine_code);
-            formData.append("profilePicture", values.profilePicture);
+            if (values.profilePicture) {
+                formData.append("profilePicture", values.profilePicture);
+            }
 
-            // Call Next.js API route instead of direct backend
             await axios.post("/api/auth/register", formData);
 
             toast({
@@ -177,6 +258,7 @@ const RegisterPage = () => {
             }
         }
     };
+
     return (
         <>
             <Card className="min-w-[700px] bg-white border-none shadow-lg">
@@ -200,8 +282,8 @@ const RegisterPage = () => {
                                         name="name"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-blue-600">
-                                                    Nama Lengkap
+                                                <FormLabel>
+                                                    <RequiredLabel>Nama Lengkap</RequiredLabel>
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
@@ -219,7 +301,9 @@ const RegisterPage = () => {
                                         name="username"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-blue-600">Username</FormLabel>
+                                                <FormLabel>
+                                                    <RequiredLabel>Username</RequiredLabel>
+                                                </FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         className="bg-white text-blue-600 placeholder:text-blue-600"
@@ -236,7 +320,9 @@ const RegisterPage = () => {
                                         name="email"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-blue-600">Email</FormLabel>
+                                                <FormLabel>
+                                                    <RequiredLabel>Email</RequiredLabel>
+                                                </FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         className="bg-white text-blue-600 placeholder:text-blue-600"
@@ -254,7 +340,9 @@ const RegisterPage = () => {
                                         name="password"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-blue-600">Password</FormLabel>
+                                                <FormLabel>
+                                                    <RequiredLabel>Password</RequiredLabel>
+                                                </FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         className="bg-white text-blue-600 placeholder:text-blue-600"
@@ -272,8 +360,8 @@ const RegisterPage = () => {
                                         name="password_confirmation"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-blue-600">
-                                                    Konfirmasi Password
+                                                <FormLabel>
+                                                    <RequiredLabel>Konfirmasi Password</RequiredLabel>
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
@@ -292,14 +380,22 @@ const RegisterPage = () => {
                                         name="phoneNumber"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-blue-600">Nomor HP</FormLabel>
+                                                <FormLabel>
+                                                    <RequiredLabel>Nomor HP</RequiredLabel>
+                                                </FormLabel>
                                                 <FormControl>
-                                                    <Input
-                                                        className="bg-white text-blue-600 placeholder:text-blue-600"
-                                                        placeholder="Masukan nomor hp anda"
-                                                        type="text"
-                                                        {...field}
-                                                    />
+                                                    <div className="flex">
+                                                        <CountryCodeSelect
+                                                            value={countryDial}
+                                                            onChange={setCountryDial}
+                                                        />
+                                                        <Input
+                                                            className="bg-white text-blue-600 placeholder:text-blue-400 rounded-l-none border-l-0"
+                                                            placeholder="8123456789"
+                                                            type="text"
+                                                            {...field}
+                                                        />
+                                                    </div>
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -310,7 +406,9 @@ const RegisterPage = () => {
                                         name="address"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-blue-600">Alamat</FormLabel>
+                                                <FormLabel>
+                                                    <RequiredLabel>Alamat</RequiredLabel>
+                                                </FormLabel>
                                                 <FormControl>
                                                     <Textarea
                                                         className="bg-white text-blue-600 placeholder:text-blue-600"
@@ -326,79 +424,30 @@ const RegisterPage = () => {
                                 <aside className="flex flex-col gap-2">
                                     <FormField
                                         control={form.control}
-                                        name="car_series_id"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-blue-600">
-                                                    Pilih Seri
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Select
-                                                        onValueChange={(
-                                                            value
-                                                        ) =>
-                                                            field.onChange(
-                                                                value
-                                                            )
-                                                        }
-                                                        {...field}
-                                                    >
-                                                        <SelectTrigger className="bg-white text-blue-600 border-blue-600">
-                                                            <SelectValue placeholder="Pilih Seri BMW" />
-                                                        </SelectTrigger>
-                                                        <SelectContent className="bg-white text-blue-600 border-blue-600">
-                                                            {carSeries.map(
-                                                                (item) => (
-                                                                    <SelectItem
-                                                                        key={item}
-                                                                        value={item}
-                                                                        className="text-blue-600 focus:bg-blue-700"
-                                                                    >
-                                                                        {item}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
                                         name="car_year"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-blue-600">
-                                                    Pilih Tahun Produksi BMW
+                                                <FormLabel>
+                                                    <RequiredLabel>Pilih Tahun Produksi BMW</RequiredLabel>
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Select
-                                                        onValueChange={(
-                                                            value
-                                                        ) =>
-                                                            field.onChange(
-                                                                value
-                                                            )
-                                                        }
+                                                        onValueChange={(value) => field.onChange(value)}
                                                         {...field}
                                                     >
                                                         <SelectTrigger className="bg-white text-blue-600 border-blue-600">
                                                             <SelectValue placeholder="Pilih Tahun Produksi BMW" />
                                                         </SelectTrigger>
                                                         <SelectContent className="bg-white text-blue-600 border-blue-600">
-                                                            {carYears.map(
-                                                                (item) => (
-                                                                    <SelectItem
-                                                                        key={item}
-                                                                        value={item}
-                                                                        className="text-blue-600 focus:bg-blue-700"
-                                                                    >
-                                                                        {item}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
+                                                            {carYears.map((item) => (
+                                                                <SelectItem
+                                                                    key={item}
+                                                                    value={item}
+                                                                    className="text-blue-600 focus:bg-blue-700"
+                                                                >
+                                                                    {item}
+                                                                </SelectItem>
+                                                            ))}
                                                         </SelectContent>
                                                     </Select>
                                                 </FormControl>
@@ -411,35 +460,27 @@ const RegisterPage = () => {
                                         name="engine_code"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-blue-600">
-                                                    Pilih Kode Mesin BMW
+                                                <FormLabel>
+                                                    <RequiredLabel>Pilih Kode Mesin BMW</RequiredLabel>
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Select
-                                                        onValueChange={(
-                                                            value
-                                                        ) =>
-                                                            field.onChange(
-                                                                value
-                                                            )
-                                                        }
+                                                        onValueChange={(value) => field.onChange(value)}
                                                         {...field}
                                                     >
                                                         <SelectTrigger className="bg-white text-blue-600 border-blue-600">
                                                             <SelectValue placeholder="Pilih Kode Mesin BMW" />
                                                         </SelectTrigger>
                                                         <SelectContent className="bg-white text-blue-600 border-blue-600">
-                                                            {engineCodes.map(
-                                                                (item) => (
-                                                                    <SelectItem
-                                                                        key={item}
-                                                                        value={item}
-                                                                        className="text-blue-600 focus:bg-blue-700"
-                                                                    >
-                                                                        {item}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
+                                                            {engineCodes.map((item) => (
+                                                                <SelectItem
+                                                                    key={item}
+                                                                    value={item}
+                                                                    className="text-blue-600 focus:bg-blue-700"
+                                                                >
+                                                                    {item}
+                                                                </SelectItem>
+                                                            ))}
                                                         </SelectContent>
                                                     </Select>
                                                 </FormControl>
@@ -452,8 +493,8 @@ const RegisterPage = () => {
                                         name="plateNumber"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-blue-600">
-                                                    Plat Nomor
+                                                <FormLabel>
+                                                    <RequiredLabel>Plat Nomor</RequiredLabel>
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
@@ -470,12 +511,7 @@ const RegisterPage = () => {
                                         control={form.control}
                                         name="profilePicture"
                                         render={({
-                                            field: {
-                                                onChange,
-                                                name,
-                                                ref,
-                                                disabled,
-                                            },
+                                            field: { onChange, name, ref, disabled },
                                         }) => (
                                             <FormItem>
                                                 <FormLabel className="text-blue-600">
@@ -487,12 +523,9 @@ const RegisterPage = () => {
                                                         type="file"
                                                         accept="image/*"
                                                         onChange={(e) => {
-                                                            const files =
-                                                                e.target.files;
+                                                            const files = e.target.files;
                                                             if (files) {
-                                                                onChange(
-                                                                    files[0]
-                                                                );
+                                                                onChange(files[0]);
                                                             }
                                                         }}
                                                         name={name}

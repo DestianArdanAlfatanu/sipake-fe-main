@@ -150,7 +150,7 @@ export default function AdminDashboard() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Consultations by Module</CardTitle>
-                        <CardDescription>Distribution between Engine and Suspension</CardDescription>
+                        <CardDescription>Distribution between Engine and Undercarriage</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
@@ -175,7 +175,7 @@ export default function AdminDashboard() {
                             </div>
                             <div>
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-medium">Suspension</span>
+                                    <span className="text-sm font-medium">Undercarriage</span>
                                     <span className="text-sm text-gray-600">
                                         {stats?.consultations?.byModule?.suspension || 0} consultations
                                     </span>
@@ -237,8 +237,8 @@ export default function AdminDashboard() {
                             href="/admin/engine/problems"
                         />
                         <QuickActionButton
-                            title="Manage Suspension Problems"
-                            description="Add, edit, or delete suspension problems"
+                            title="Manage Undercarriage Problems"
+                            description="Add, edit, or delete undercarriage problems"
                             href="/admin/suspension/problems"
                         />
                         {userRole === 'SUPER_ADMIN' && (

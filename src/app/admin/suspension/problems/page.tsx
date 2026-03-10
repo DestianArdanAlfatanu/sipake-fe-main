@@ -88,8 +88,8 @@ export default function SuspensionProblemsPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Suspension Problems</h1>
-                    <p className="text-gray-600 mt-2">Manage suspension problem database</p>
+                    <h1 className="text-3xl font-bold text-gray-900">Undercarriage Problems</h1>
+                    <p className="text-gray-600 mt-2">Manage undercarriage problem database</p>
                 </div>
                 <Button
                     onClick={() => {
@@ -289,7 +289,7 @@ function ProblemModal({
                 <CardHeader>
                     <CardTitle>{problem ? 'Edit Problem' : 'Add New Problem'}</CardTitle>
                     <CardDescription>
-                        {problem ? 'Update problem information' : 'Create a new suspension problem'}
+                        {problem ? 'Update problem information' : 'Create a new undercarriage problem'}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>

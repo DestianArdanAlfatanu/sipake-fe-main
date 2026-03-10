@@ -4,11 +4,14 @@ import { Response, User } from "@/types/api.dt";
 import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { getAssetUrl } from "@/lib/utils";
+
 interface Props {
     token: string;
 }
+
 const HeaderAvatar: React.FC<Props> = ({ token }) => {
     const [user, setUser] = useState<User | null>(null);
+
     useEffect(() => {
         if (token) {
             getUser();
@@ -25,11 +28,12 @@ const HeaderAvatar: React.FC<Props> = ({ token }) => {
             console.error(error);
         }
     };
+
     return (
         <>
             {user ? (
-                <div className="flex items-center gap-2">
-                    <Avatar>
+                <div className="flex items-center gap-3 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200">
+                    <Avatar className="h-8 w-8 ring-2 ring-blue-100">
                         <AvatarImage
                             src={getAssetUrl(user.profilePicture)}
                             alt={`${user.name} photo profile`}
@@ -38,22 +42,28 @@ const HeaderAvatar: React.FC<Props> = ({ token }) => {
                                 objectPosition: "top",
                             }}
                         />
-                        <AvatarFallback>
-                            {user.name.split(" ").map((s) => s[0])}
+                        <AvatarFallback className="bg-blue-600 text-white text-xs font-bold">
+                            {user.name
+                                .split(" ")
+                                .map((s) => s[0])
+                                .join("")
+                                .toUpperCase()
+                                .slice(0, 2)}
                         </AvatarFallback>
                     </Avatar>
-                    <p className="text-white text-base font-semibold">
+                    <p className="text-sm font-semibold text-gray-700">
                         {user.name}
                     </p>
                 </div>
             ) : (
-                <Avatar>
-                    <AvatarImage
-                        src="https://github.com/shadcn.png"
-                        alt="@shadcn"
-                    />
-                    <AvatarFallback>U</AvatarFallback>
-                </Avatar>
+                <div className="flex items-center gap-3 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200">
+                    <Avatar className="h-8 w-8">
+                        <AvatarFallback className="bg-gray-300 text-gray-600 text-xs font-bold">
+                            U
+                        </AvatarFallback>
+                    </Avatar>
+                    <div className="h-4 w-20 bg-gray-200 rounded animate-pulse" />
+                </div>
             )}
         </>
     );

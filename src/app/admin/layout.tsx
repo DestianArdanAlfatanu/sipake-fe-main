@@ -155,7 +155,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     <div className="pt-4">
                         {sidebarOpen && (
                             <p className="text-xs text-blue-300 uppercase tracking-wider mb-2">
-                                Suspension Management
+                                Undercarriage Management
                             </p>
                         )}
                         <NavItem

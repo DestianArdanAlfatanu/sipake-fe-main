@@ -82,8 +82,8 @@ export default function SuspensionSymptomsPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Suspension Symptoms</h1>
-                    <p className="text-gray-600 mt-2">Manage suspension symptom database</p>
+                    <h1 className="text-3xl font-bold text-gray-900">Undercarriage Symptoms</h1>
+                    <p className="text-gray-600 mt-2">Manage undercarriage symptom database</p>
                 </div>
                 <Button
                     onClick={() => {
@@ -273,7 +273,7 @@ function SymptomModal({
                 <CardHeader>
                     <CardTitle>{symptom ? 'Edit Symptom' : 'Add New Symptom'}</CardTitle>
                     <CardDescription>
-                        {symptom ? 'Update symptom information' : 'Create a new suspension symptom'}
+                        {symptom ? 'Update symptom information' : 'Create a new undercarriage symptom'}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
