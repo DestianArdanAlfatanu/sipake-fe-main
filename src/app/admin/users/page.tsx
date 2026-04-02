@@ -98,38 +98,39 @@ export default function UserManagementPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-                    <p className="text-gray-600 mt-2">Manage system users and roles</p>
+                    <h1 className="text-xl md:text-3xl font-bold text-gray-900">User Management</h1>
+                    <p className="text-sm text-gray-600 mt-1 md:mt-2">Manage system users and roles</p>
                 </div>
                 <Button
                     onClick={() => {
                         setEditingUser(null);
                         setShowModal(true);
                     }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    className="bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+                    size="sm"
                 >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add User
+                    <Plus className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Add User</span>
                 </Button>
             </div>
 
             {/* Filters */}
             <Card>
                 <CardContent className="pt-6">
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
                         <div className="flex items-center gap-2 flex-1">
-                            <Search className="h-5 w-5 text-blue-600" />
+                            <Search className="h-5 w-5 text-blue-600 shrink-0" />
                             <Input
-                                placeholder="Search by name, username, or email..."
+                                placeholder="Search..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="max-w-md focus:ring-blue-600 focus:border-blue-600 bg-white"
+                                className="max-w-md focus:ring-blue-600 focus:border-blue-600 bg-white text-sm"
                             />
                         </div>
                         <select
                             value={roleFilter}
                             onChange={(e) => setRoleFilter(e.target.value)}
-                            className="border rounded-md px-3 py-2"
+                            className="border rounded-md px-3 py-2 text-sm"
                         >
                             <option value="">All Roles</option>
                             <option value="SUPER_ADMIN">Super Admin</option>
@@ -151,11 +152,11 @@ export default function UserManagementPage() {
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b">
-                                    <th className="text-left p-4 font-semibold">User</th>
-                                    <th className="text-left p-4 font-semibold">Email</th>
-                                    <th className="text-left p-4 font-semibold">Role</th>
-                                    <th className="text-center p-4 font-semibold">Status</th>
-                                    <th className="text-right p-4 font-semibold">Actions</th>
+                                    <th className="text-left p-2 md:p-4 font-semibold text-xs md:text-sm">User</th>
+                                    <th className="text-left p-2 md:p-4 font-semibold text-xs md:text-sm hidden md:table-cell">Email</th>
+                                    <th className="text-left p-2 md:p-4 font-semibold text-xs md:text-sm">Role</th>
+                                    <th className="text-center p-2 md:p-4 font-semibold text-xs md:text-sm hidden md:table-cell">Status</th>
+                                    <th className="text-right p-2 md:p-4 font-semibold text-xs md:text-sm">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -169,22 +170,22 @@ export default function UserManagementPage() {
                                 ) : (
                                     filteredUsers.map((user) => (
                                         <tr key={user.username} className="border-b hover:bg-gray-50">
-                                            <td className="p-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                                            <td className="p-2 md:p-4">
+                                                <div className="flex items-center gap-2 md:gap-3">
+                                                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-purple-100 flex items-center justify-center shrink-0">
                                                         {getRoleIcon(user.role)}
                                                     </div>
                                                     <div>
-                                                        <p className="font-semibold">{user.name}</p>
-                                                        <p className="text-sm text-gray-600">@{user.username}</p>
+                                                        <p className="font-semibold text-xs md:text-sm">{user.name}</p>
+                                                        <p className="text-[10px] md:text-sm text-gray-600">@{user.username}</p>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="p-4 text-sm text-gray-600">{user.email}</td>
-                                            <td className="p-4">
+                                            <td className="p-2 md:p-4 text-xs md:text-sm text-gray-600 hidden md:table-cell">{user.email}</td>
+                                            <td className="p-2 md:p-4">
                                                 <RoleBadge role={user.role} />
                                             </td>
-                                            <td className="p-4 text-center">
+                                            <td className="p-2 md:p-4 text-center hidden md:table-cell">
                                                 {user.verified ? (
                                                     <Badge variant="default" className="bg-green-600">
                                                         Verified
@@ -193,8 +194,8 @@ export default function UserManagementPage() {
                                                     <Badge variant="secondary">Not Verified</Badge>
                                                 )}
                                             </td>
-                                            <td className="p-4">
-                                                <div className="flex items-center justify-end gap-2">
+                                            <td className="p-2 md:p-4">
+                                                <div className="flex items-center justify-end gap-1 md:gap-2">
                                                     <Button
                                                         className="bg-blue-600 text-black"
                                                         variant="outline"

@@ -6,7 +6,7 @@ export default async function AuthLayout({
 }) {
 
     return (
-        <main className="w-full min-h-screen bg-zinc-950 flex flex-col gap-4 items-center justify-center">
+        <main className="w-full min-h-screen bg-zinc-950 flex flex-col gap-4 items-center justify-center px-4">
             {children}
         </main>
     );

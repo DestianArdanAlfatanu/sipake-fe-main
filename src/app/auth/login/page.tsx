@@ -195,6 +195,14 @@ const LoginPage = () => {
                                     </FormItem>
                                 )}
                             />
+                            <div className="flex justify-end">
+                                <Link
+                                    href="/auth/forgot-password"
+                                    className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
+                                >
+                                    Lupa kata sandi?
+                                </Link>
+                            </div>
                             <Button
                                 type="submit"
                                 disabled={isLoading}

@@ -82,18 +82,19 @@ export default function EngineSymptomsPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Engine Symptoms</h1>
-                    <p className="text-gray-600 mt-2">Manage engine symptom database</p>
+                    <h1 className="text-xl md:text-3xl font-bold text-gray-900">Engine Symptoms</h1>
+                    <p className="text-sm text-gray-600 mt-1 md:mt-2">Manage engine symptom database</p>
                 </div>
                 <Button
                     onClick={() => {
                         setEditingSymptom(null);
                         setShowModal(true);
                     }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    className="bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+                    size="sm"
                 >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Symptom
+                    <Plus className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Add Symptom</span>
                 </Button>
             </div>
 
@@ -121,10 +122,10 @@ export default function EngineSymptomsPage() {
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b">
-                                    <th className="text-left p-4 font-semibold">ID</th>
-                                    <th className="text-left p-4 font-semibold">Name</th>
-                                    <th className="text-left p-4 font-semibold">Description</th>
-                                    <th className="text-right p-4 font-semibold">Actions</th>
+                                    <th className="text-left p-2 md:p-4 font-semibold text-xs md:text-sm">ID</th>
+                                    <th className="text-left p-2 md:p-4 font-semibold text-xs md:text-sm">Name</th>
+                                    <th className="text-left p-2 md:p-4 font-semibold text-xs md:text-sm hidden md:table-cell">Description</th>
+                                    <th className="text-right p-2 md:p-4 font-semibold text-xs md:text-sm">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -138,17 +139,17 @@ export default function EngineSymptomsPage() {
                                 ) : (
                                     symptoms.map((symptom) => (
                                         <tr key={symptom.id} className="border-b hover:bg-gray-50">
-                                            <td className="p-4">
-                                                <span className="font-mono text-sm font-semibold text-blue-600">
+                                            <td className="p-2 md:p-4">
+                                                <span className="font-mono text-xs md:text-sm font-semibold text-blue-600">
                                                     {symptom.id}
                                                 </span>
                                             </td>
-                                            <td className="p-4 font-medium">{symptom.name}</td>
-                                            <td className="p-4 text-sm text-gray-600 max-w-md truncate">
+                                            <td className="p-2 md:p-4 font-medium text-xs md:text-sm">{symptom.name}</td>
+                                            <td className="p-2 md:p-4 text-xs md:text-sm text-gray-600 max-w-md truncate hidden md:table-cell">
                                                 {symptom.description || '-'}
                                             </td>
-                                            <td className="p-4">
-                                                <div className="flex items-center justify-end gap-2">
+                                            <td className="p-2 md:p-4">
+                                                <div className="flex items-center justify-end gap-1 md:gap-2">
                                                     <Button
                                                         className="bg-blue-500 text-black"
                                                         variant="outline"

@@ -91,7 +91,7 @@ export default function AdminDashboard() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+                <h1 className="text-xl md:text-3xl font-bold text-gray-900">Dashboard Overview</h1>
                 <p className="text-gray-600 mt-2">
                     System statistics and insights at a glance
                 </p>
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
             )}
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                 <StatsCard
                     title="Total Users"
                     value={stats?.users?.total || 0}
@@ -230,7 +230,7 @@ export default function AdminDashboard() {
                     <CardDescription>Common administrative tasks</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
                         <QuickActionButton
                             title="Manage Engine Problems"
                             description="Add, edit, or delete engine problems"
@@ -281,9 +281,9 @@ function StatsCard({
             <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className="text-sm font-medium text-gray-600">{title}</p>
-                        <h3 className="text-3xl font-bold text-gray-900 mt-2">{value.toLocaleString()}</h3>
-                        <p className="text-xs text-gray-500 mt-1">{description}</p>
+                        <p className="text-xs md:text-sm font-medium text-gray-600">{title}</p>
+                        <h3 className="text-xl md:text-3xl font-bold text-gray-900 mt-1 md:mt-2">{value.toLocaleString()}</h3>
+                        <p className="text-[10px] md:text-xs text-gray-500 mt-0.5 md:mt-1">{description}</p>
                     </div>
                     <div className={`p-3 rounded-full ${colorClasses[color as keyof typeof colorClasses]}`}>
                         {icon}

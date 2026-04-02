@@ -261,7 +261,7 @@ const RegisterPage = () => {
 
     return (
         <>
-            <Card className="min-w-[700px] bg-white border-none shadow-lg">
+            <Card className="w-full max-w-[700px] mx-auto bg-white border-none shadow-lg">
                 <CardHeader>
                     <CardTitle className="text-blue-600">Registrasi</CardTitle>
                     <CardDescription className="text-blue-600/90">
@@ -275,7 +275,7 @@ const RegisterPage = () => {
                             onSubmit={form.handleSubmit(onSubmit)}
                             className="flex flex-col gap-2"
                         >
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <aside className="flex flex-col gap-2">
                                     <FormField
                                         control={form.control}

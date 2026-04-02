@@ -22,6 +22,7 @@ import axios, { isAxiosError } from "axios";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -39,6 +40,7 @@ type Schema = z.infer<typeof formSchema>;
 const VerifyPage = () => {
     const searchParams = useSearchParams();
     const username = searchParams.get("username") || "";
+    const [isResending, setIsResending] = useState(false);
 
     const form = useForm<Schema>({
         resolver: zodResolver(formSchema),
@@ -105,6 +107,41 @@ const VerifyPage = () => {
         }
     };
 
+    const onResendOtp = async () => {
+        if (!username) {
+            toast({
+                variant: "destructive",
+                title: "Gagal!",
+                description: "Username tidak ditemukan. Silakan registrasi ulang.",
+            });
+            return;
+        }
+
+        try {
+            setIsResending(true);
+            await axios.post("/api/auth/resend-verification", {
+                username: username,
+            });
+
+            toast({
+                variant: "default",
+                title: "Berhasil",
+                description: "Kode verifikasi baru telah dikirim ke email Anda.",
+            });
+        } catch (error) {
+            if (isAxiosError(error)) {
+                const responseData = error.response?.data;
+                toast({
+                    variant: "destructive",
+                    title: "Gagal!",
+                    description: responseData?.message || "Gagal mengirim ulang kode. Silakan coba lagi.",
+                });
+            }
+        } finally {
+            setIsResending(false);
+        }
+    };
+
     return (
         <>
             <Card>
@@ -128,7 +165,7 @@ const VerifyPage = () => {
                                         <FormLabel className="text-blue-600">Username</FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder="Masukan username anda"
+                                                placeholder="Masukkan username anda"
                                                 {...field}
                                                 readOnly
                                                 className="bg-white text-blue-600 border-blue-600"
@@ -146,7 +183,7 @@ const VerifyPage = () => {
                                         <FormLabel className="text-blue-600">Kode Verifikasi</FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder="Masukan kode 6 digit"
+                                                placeholder="Masukkan kode 6 digit"
                                                 maxLength={6}
                                                 {...field}
                                                 className="bg-white text-blue-600 border-blue-600"
@@ -157,6 +194,16 @@ const VerifyPage = () => {
                                 )}
                             />
                             <Button type="submit" className="bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:border-blue-700">Verifikasi</Button>
+                            <div className="flex justify-end">
+                                <button
+                                    type="button"
+                                    onClick={onResendOtp}
+                                    disabled={isResending}
+                                    className="text-sm text-blue-600 hover:text-blue-700 hover:underline disabled:opacity-50"
+                                >
+                                    {isResending ? "Mengirim..." : "Kirim Ulang Kode"}
+                                </button>
+                            </div>
                         </form>
                     </Form>
                 </CardContent>
@@ -172,3 +219,4 @@ const VerifyPage = () => {
 };
 
 export default VerifyPage;
+

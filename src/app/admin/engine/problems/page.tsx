@@ -89,18 +89,19 @@ export default function EngineProblemsPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Engine Problems</h1>
-                    <p className="text-gray-600 mt-2">Manage engine problem database</p>
+                    <h1 className="text-xl md:text-3xl font-bold text-gray-900">Engine Problems</h1>
+                    <p className="text-sm text-gray-600 mt-1 md:mt-2">Manage engine problem database</p>
                 </div>
                 <Button
                     onClick={() => {
                         setEditingProblem(null);
                         setShowModal(true);
                     }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    className="bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+                    size="sm"
                 >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Problem
+                    <Plus className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Add Problem</span>
                 </Button>
             </div>
 
@@ -130,11 +131,11 @@ export default function EngineProblemsPage() {
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b">
-                                    <th className="text-left p-4 font-semibold">ID</th>
-                                    <th className="text-left p-4 font-semibold">Name</th>
-                                    <th className="text-left p-4 font-semibold">Description</th>
-                                    <th className="text-left p-4 font-semibold">Solution</th>
-                                    <th className="text-right p-4 font-semibold">Actions</th>
+                                    <th className="text-left p-2 md:p-4 font-semibold text-xs md:text-sm">ID</th>
+                                    <th className="text-left p-2 md:p-4 font-semibold text-xs md:text-sm">Name</th>
+                                    <th className="text-left p-2 md:p-4 font-semibold text-xs md:text-sm hidden md:table-cell">Description</th>
+                                    <th className="text-left p-2 md:p-4 font-semibold text-xs md:text-sm hidden md:table-cell">Solution</th>
+                                    <th className="text-right p-2 md:p-4 font-semibold text-xs md:text-sm">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -148,24 +149,24 @@ export default function EngineProblemsPage() {
                                 ) : (
                                     problems.map((problem) => (
                                         <tr key={problem.id} className="border-b hover:bg-gray-50">
-                                            <td className="p-4">
-                                                <span className="font-mono text-sm font-semibold text-blue-600">
+                                            <td className="p-2 md:p-4">
+                                                <span className="font-mono text-xs md:text-sm font-semibold text-blue-600">
                                                     {problem.id}
                                                 </span>
                                             </td>
-                                            <td className="p-4 font-medium">{problem.name}</td>
-                                            <td className="p-4 text-sm text-gray-600 max-w-md truncate">
+                                            <td className="p-2 md:p-4 font-medium text-xs md:text-sm">{problem.name}</td>
+                                            <td className="p-2 md:p-4 text-xs md:text-sm text-gray-600 max-w-md truncate hidden md:table-cell">
                                                 {problem.description}
                                             </td>
-                                            <td className="p-4 text-sm text-gray-600">
+                                            <td className="p-2 md:p-4 text-xs md:text-sm text-gray-600 hidden md:table-cell">
                                                 {problem.solution ? (
                                                     <span className="text-green-600">✓ Has solution</span>
                                                 ) : (
                                                     <span className="text-gray-400">No solution</span>
                                                 )}
                                             </td>
-                                            <td className="p-4">
-                                                <div className="flex items-center justify-end gap-2">
+                                            <td className="p-2 md:p-4">
+                                                <div className="flex items-center justify-end gap-1 md:gap-2">
                                                     <Button
                                                         className="bg-blue-500 text-black"
                                                         variant="outline"

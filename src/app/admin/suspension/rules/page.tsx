@@ -207,15 +207,16 @@ export default function SuspensionRulesPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Undercarriage Rules (CF Editor)</h1>
-                    <p className="text-gray-600 mt-2">Manage Certainty Factor values for expert system</p>
+                    <h1 className="text-xl md:text-3xl font-bold text-gray-900">Undercarriage Rules (CF Editor)</h1>
+                    <p className="text-sm text-gray-600 mt-1 md:mt-2">Manage Certainty Factor values for expert system</p>
                 </div>
                 <Button
                     onClick={() => setShowAddModal(true)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    className="bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+                    size="sm"
                 >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Rule
+                    <Plus className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Add Rule</span>
                 </Button>
             </div>
 
@@ -237,12 +238,12 @@ export default function SuspensionRulesPage() {
 
             <Card>
                 <CardContent className="pt-6">
-                    <div className="flex items-center gap-4">
-                        <label className="font-semibold text-gray-700">Filter by Problem:</label>
+                    <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+                        <label className="font-semibold text-gray-700 text-sm md:text-base">Filter by Problem:</label>
                         <select
                             value={selectedProblem}
                             onChange={(e) => setSelectedProblem(e.target.value)}
-                            className="border rounded-md px-3 py-2 min-w-[300px] bg-white text-gray-900"
+                            className="border rounded-md px-3 py-2 w-full md:min-w-[300px] bg-white text-gray-900 text-sm"
                         >
                             <option value="">All Problems</option>
                             {problems.map((p) => (
@@ -268,10 +269,10 @@ export default function SuspensionRulesPage() {
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b">
-                                    <th className="text-left p-4 font-semibold">Problem</th>
-                                    <th className="text-left p-4 font-semibold">Symptom</th>
-                                    <th className="text-center p-4 font-semibold">CF Value</th>
-                                    <th className="text-right p-4 font-semibold">Actions</th>
+                                    <th className="text-left p-2 md:p-4 font-semibold text-xs md:text-sm">Problem</th>
+                                    <th className="text-left p-2 md:p-4 font-semibold text-xs md:text-sm">Symptom</th>
+                                    <th className="text-center p-2 md:p-4 font-semibold text-xs md:text-sm">CF Value</th>
+                                    <th className="text-right p-2 md:p-4 font-semibold text-xs md:text-sm">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -285,23 +286,23 @@ export default function SuspensionRulesPage() {
                                 ) : (
                                     filteredRules.map((rule) => (
                                         <tr key={rule.id} className="border-b hover:bg-gray-50">
-                                            <td className="p-4">
+                                            <td className="p-2 md:p-4">
                                                 <div>
-                                                    <span className="font-mono text-sm font-semibold text-green-600">
+                                                    <span className="font-mono text-xs md:text-sm font-semibold text-green-600">
                                                         {rule.problem?.id ?? '-'}
                                                     </span>
-                                                    <p className="text-sm text-gray-600">{rule.problem?.name ?? '-'}</p>
+                                                    <p className="text-xs text-gray-600 hidden md:block">{rule.problem?.name ?? '-'}</p>
                                                 </div>
                                             </td>
-                                            <td className="p-4">
+                                            <td className="p-2 md:p-4">
                                                 <div>
-                                                    <span className="font-mono text-sm font-semibold text-green-600">
+                                                    <span className="font-mono text-xs md:text-sm font-semibold text-green-600">
                                                         {rule.symptom?.id ?? '-'}
                                                     </span>
-                                                    <p className="text-sm text-gray-600">{rule.symptom?.name ?? '-'}</p>
+                                                    <p className="text-xs text-gray-600 hidden md:block">{rule.symptom?.name ?? '-'}</p>
                                                 </div>
                                             </td>
-                                            <td className="p-4">
+                                            <td className="p-2 md:p-4">
                                                 <CFInput
                                                     value={rule.cfPakar}
                                                     onChange={(value) =>
@@ -309,8 +310,8 @@ export default function SuspensionRulesPage() {
                                                     }
                                                 />
                                             </td>
-                                            <td className="p-4">
-                                                <div className="flex items-center justify-end gap-2">
+                                            <td className="p-2 md:p-4">
+                                                <div className="flex items-center justify-end gap-1 md:gap-2">
                                                     <Button
                                                         variant="destructive"
                                                         size="sm"

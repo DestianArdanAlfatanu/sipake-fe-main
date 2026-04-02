@@ -14,8 +14,22 @@ interface AdminLayoutProps {
 export default function AdminLayout({ children }: AdminLayoutProps) {
     const router = useRouter();
     const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const handleResize = () => {
+            const mobile = window.innerWidth <= 768;
+            setIsMobile(mobile);
+            if (mobile) {
+                setSidebarOpen(false);
+            }
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         checkAuth();
@@ -71,6 +85,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         router.push('/auth/login');
     };
 
+    const handleNavClick = (href: string) => {
+        if (isMobile) setSidebarOpen(false);
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -93,16 +111,29 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
 
     return (
-        <div className="flex h-screen bg-slate-50">
+        <div className="flex h-screen bg-slate-50 relative">
+            {/* Mobile Overlay */}
+            {isMobile && sidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
+
             {/* Sidebar */}
             <aside
-                className={`${sidebarOpen ? 'w-64' : 'w-20'
-                    } bg-gradient-to-b from-blue-900 to-blue-800 text-white transition-all duration-300 flex flex-col`}
+                className={`
+                    ${isMobile
+                        ? `fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`
+                        : `${sidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300`
+                    }
+                    bg-gradient-to-b from-blue-900 to-blue-800 text-white flex flex-col
+                `}
             >
                 {/* Logo */}
                 <div className="p-4 border-b border-blue-700">
                     <div className="flex items-center justify-between">
-                        {sidebarOpen && (
+                        {(sidebarOpen || isMobile) && (
                             <h1 className="text-xl font-bold">Si Pak-E Admin</h1>
                         )}
                         <button
@@ -121,12 +152,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                         icon={<LayoutDashboard size={20} />}
                         label="Dashboard"
                         href="/admin"
-                        collapsed={!sidebarOpen}
+                        collapsed={!sidebarOpen && !isMobile}
+                        onNavigate={handleNavClick}
                     />
 
                     {/* Engine Management */}
                     <div className="pt-4">
-                        {sidebarOpen && (
+                        {(sidebarOpen || isMobile) && (
                             <p className="text-xs text-blue-300 uppercase tracking-wider mb-2">
                                 Engine Management
                             </p>
@@ -135,25 +167,28 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                             icon={<AlertCircle size={20} />}
                             label="Problems"
                             href="/admin/engine/problems"
-                            collapsed={!sidebarOpen}
+                            collapsed={!sidebarOpen && !isMobile}
+                            onNavigate={handleNavClick}
                         />
                         <NavItem
                             icon={<Activity size={20} />}
                             label="Symptoms"
                             href="/admin/engine/symptoms"
-                            collapsed={!sidebarOpen}
+                            collapsed={!sidebarOpen && !isMobile}
+                            onNavigate={handleNavClick}
                         />
                         <NavItem
                             icon={<GitBranch size={20} />}
                             label="Rules (CF)"
                             href="/admin/engine/rules"
-                            collapsed={!sidebarOpen}
+                            collapsed={!sidebarOpen && !isMobile}
+                            onNavigate={handleNavClick}
                         />
                     </div>
 
                     {/* Suspension Management */}
                     <div className="pt-4">
-                        {sidebarOpen && (
+                        {(sidebarOpen || isMobile) && (
                             <p className="text-xs text-blue-300 uppercase tracking-wider mb-2">
                                 Undercarriage Management
                             </p>
@@ -162,26 +197,29 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                             icon={<AlertCircle size={20} />}
                             label="Problems"
                             href="/admin/suspension/problems"
-                            collapsed={!sidebarOpen}
+                            collapsed={!sidebarOpen && !isMobile}
+                            onNavigate={handleNavClick}
                         />
                         <NavItem
                             icon={<Activity size={20} />}
                             label="Symptoms"
                             href="/admin/suspension/symptoms"
-                            collapsed={!sidebarOpen}
+                            collapsed={!sidebarOpen && !isMobile}
+                            onNavigate={handleNavClick}
                         />
                         <NavItem
                             icon={<GitBranch size={20} />}
                             label="Rules (CF)"
                             href="/admin/suspension/rules"
-                            collapsed={!sidebarOpen}
+                            collapsed={!sidebarOpen && !isMobile}
+                            onNavigate={handleNavClick}
                         />
                     </div>
 
                     {/* User Management (SUPER_ADMIN only) */}
                     {user?.role === 'SUPER_ADMIN' && (
                         <div className="pt-4">
-                            {sidebarOpen && (
+                            {(sidebarOpen || isMobile) && (
                                 <p className="text-xs text-blue-300 uppercase tracking-wider mb-2">
                                     System
                                 </p>
@@ -190,7 +228,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                                 icon={<Users size={20} />}
                                 label="User Management"
                                 href="/admin/users"
-                                collapsed={!sidebarOpen}
+                                collapsed={!sidebarOpen && !isMobile}
+                                onNavigate={handleNavClick}
                             />
                         </div>
                     )}
@@ -198,7 +237,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
                 {/* User Info */}
                 <div className="p-4 border-t border-blue-700">
-                    {sidebarOpen ? (
+                    {(sidebarOpen || isMobile) ? (
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
                                 <div>
@@ -232,18 +271,29 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-auto">
+            <main className="flex-1 overflow-auto min-w-0">
                 {/* Header */}
-                <header className="bg-white shadow-sm border-b border-gray-200 p-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-800">Admin Dashboard</h2>
-                            <p className="text-sm text-gray-600 mt-1">
-                                Manage knowledge base and system settings
-                            </p>
+                <header className="bg-white shadow-sm border-b border-gray-200 p-4 md:p-6">
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                            {/* Mobile hamburger button */}
+                            {isMobile && (
+                                <button
+                                    onClick={() => setSidebarOpen(true)}
+                                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                >
+                                    <Menu size={22} className="text-gray-700" />
+                                </button>
+                            )}
+                            <div>
+                                <h2 className="text-lg md:text-2xl font-bold text-gray-800">Admin Dashboard</h2>
+                                <p className="text-xs md:text-sm text-gray-600 mt-0.5 md:mt-1">
+                                    Manage knowledge base and system settings
+                                </p>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <Badge variant="outline" className="text-sm bg-blue-600 text-white">
+                        <div className="flex items-center gap-2 md:gap-4 shrink-0">
+                            <Badge variant="outline" className="text-xs md:text-sm bg-blue-600 text-white">
                                 {user?.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Expert'}
                             </Badge>
                         </div>
@@ -251,7 +301,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 </header>
 
                 {/* Page Content */}
-                <div className="p-6">
+                <div className="p-3 md:p-6">
                     {children}
                 </div>
             </main>
@@ -265,11 +315,13 @@ function NavItem({
     label,
     href,
     collapsed,
+    onNavigate,
 }: {
     icon: React.ReactNode;
     label: string;
     href: string;
     collapsed: boolean;
+    onNavigate?: (href: string) => void;
 }) {
     const router = useRouter();
     const pathname = usePathname();
@@ -277,7 +329,7 @@ function NavItem({
 
     return (
         <button
-            onClick={() => router.push(href)}
+            onClick={() => { router.push(href); onNavigate?.(href); }}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${isActive
                 ? 'bg-blue-700 text-white shadow-lg'
                 : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'
