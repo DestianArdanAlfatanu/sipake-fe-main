@@ -63,7 +63,13 @@ const ConsultationProcessComp: React.FC<Props> = ({ token, apiBaseUrl, historyRo
     const [symptom, setSymptom] = useState<Symptom>();
     const [rankings, setRankings] = useState<ProblemRanking[]>();
     const [questionNumber, setQuestionNumber] = useState(1);
+    const [imgVisible, setImgVisible] = useState(true);
     const router = useRouter();
+
+    // Reset image visibility setiap kali symptom berubah
+    useEffect(() => {
+        setImgVisible(true);
+    }, [symptom?.id]);
 
     useEffect(() => { startConsultation(); }, []);
 
@@ -72,6 +78,7 @@ const ConsultationProcessComp: React.FC<Props> = ({ token, apiBaseUrl, historyRo
         setRankings(undefined);
         setSymptom(undefined);
         setQuestionNumber(1);
+        setImgVisible(true);
         const response = await axios.get<Response<Symptom>>(
             `${apiBaseUrl}/start`,
             { headers: { Authorization: `Bearer ${token}` } }
@@ -278,18 +285,23 @@ const ConsultationProcessComp: React.FC<Props> = ({ token, apiBaseUrl, historyRo
                         <p className="text-sm font-medium text-gray-700">Apakah Anda mengalami gejala berikut?</p>
                     </div>
 
-                    {/* Symptom Image */}
+                    {/* Symptom Image + Question + Buttons */}
                     {symptom && (
                         <>
-                            <div className="flex justify-center">
-                                <div className="rounded-xl border border-gray-100 bg-white p-2 shadow-sm">
-                                    <img
-                                        src={getAssetUrl(`public/images/symptoms/${symptom.picture}`)}
-                                        alt={symptom.name}
-                                        className="w-full max-w-sm h-44 object-contain rounded-lg"
-                                    />
+                            {/* Symptom Image — hanya tampil jika ada picture DAN belum error */}
+                            {symptom.picture && imgVisible && (
+                                <div className="flex justify-center">
+                                    <div className="rounded-xl border border-gray-100 bg-white p-2 shadow-sm">
+                                        <img
+                                            key={symptom.id}
+                                            src={getAssetUrl(`public/images/symptoms/${symptom.picture}`)}
+                                            alt={symptom.name}
+                                            className="w-full max-w-sm h-44 object-contain rounded-lg"
+                                            onError={() => setImgVisible(false)}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Symptom name */}
                             <div className="text-center">

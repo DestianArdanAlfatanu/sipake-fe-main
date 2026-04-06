@@ -3,8 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Plus, Trash2, AlertCircle, Info } from 'lucide-react';
+import { Plus, Trash2, AlertCircle, Info, Pencil } from 'lucide-react';
 import axios from '@/lib/axios';
 
 interface Rule {
@@ -32,19 +31,6 @@ function getToken(): string {
         ?.split('=')[1] ?? '';
 }
 
-// Ekstrak array dari berbagai kemungkinan struktur response
-// Interceptor NestJS: { statusCode, message, data: ORIGINAL_RETURN }
-// Jika endpoint return { data: [...] }       → interceptor: { data: { data: [...] } }       → ambil .data.data
-// Jika endpoint return { data: [...], meta } → interceptor: { data: { data: [...], meta } } → ambil .data.data
-function extractArray(res: any): any[] {
-    const d = res?.data;
-    if (!d) return [];
-    if (Array.isArray(d)) return d;                        // data langsung array
-    if (Array.isArray(d.data)) return d.data;             // { data: [...] }
-    if (Array.isArray(d.data?.data)) return d.data.data;  // { data: { data: [...] } }
-    return [];
-}
-
 // Gabungkan dua array, deduplikasi berdasarkan id, lalu sort
 function mergeById<T extends { id: string }>(a: T[], b: T[]): T[] {
     const map = new Map<string, T>();
@@ -54,6 +40,13 @@ function mergeById<T extends { id: string }>(a: T[], b: T[]): T[] {
     return Array.from(map.values()).sort((x, y) => x.id.localeCompare(y.id));
 }
 
+function getColorClass(cf: number) {
+    if (cf >= 0.8) return 'bg-green-100 text-green-800 border-green-300';
+    if (cf >= 0.6) return 'bg-blue-100 text-blue-800 border-blue-300';
+    if (cf >= 0.4) return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+    return 'bg-red-100 text-red-800 border-red-300';
+}
+
 export default function SuspensionRulesPage() {
     const [rules, setRules] = useState<Rule[]>([]);
     const [problems, setProblems] = useState<Problem[]>([]);
@@ -61,6 +54,7 @@ export default function SuspensionRulesPage() {
     const [loading, setLoading] = useState(true);
     const [selectedProblem, setSelectedProblem] = useState<string>('');
     const [showAddModal, setShowAddModal] = useState(false);
+    const [editingRule, setEditingRule] = useState<Rule | null>(null);
 
     useEffect(() => {
         fetchData();
@@ -122,12 +116,11 @@ export default function SuspensionRulesPage() {
                 .map((r) => r.symptom)
                 .filter((s): s is Symptom => !!s?.id);
 
-            // Merge: gabungkan dari API + dari rules agar problem/symptom baru (tanpa rule) tetap muncul
+            // Merge: gabungkan dari API + dari rules
             setProblems(mergeById(problemsFromApi, problemsFromRules));
             setSymptoms(mergeById(symptomsFromApi, symptomsFromRules));
 
             // Jika ada filterTo (setelah create), filter ke problem baru agar langsung terlihat
-            // Jika tidak ada, biarkan filter yang sekarang tidak berubah
             if (filterTo !== undefined) {
                 setSelectedProblem(filterTo);
             }
@@ -140,38 +133,6 @@ export default function SuspensionRulesPage() {
         }
 
         setLoading(false);
-    };
-
-    const getRuleId = (problemId: string, symptomId: string): number | null => {
-        const rule = rules.find(
-            (r) => r.problem?.id === problemId && r.symptom?.id === symptomId
-        );
-        return rule ? rule.id : null;
-    };
-
-    const handleUpdateCF = async (problemId: string, symptomId: string, cfValue: number) => {
-        const ruleId = getRuleId(problemId, symptomId);
-        const token = getToken();
-
-        try {
-            if (ruleId) {
-                await axios.put(
-                    `/admin/suspension/rules/${ruleId}`,
-                    { expertCf: cfValue },
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-            } else {
-                await axios.post(
-                    '/admin/suspension/rules',
-                    { problemId, symptomId, expertCf: cfValue },
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-            }
-            fetchData();
-        } catch (error: any) {
-            console.error('Failed to save CF:', error);
-            alert(error.response?.data?.message || 'Failed to save CF value!');
-        }
     };
 
     const handleDeleteRule = async (ruleId: number) => {
@@ -284,45 +245,55 @@ export default function SuspensionRulesPage() {
                                         </td>
                                     </tr>
                                 ) : (
-                                    filteredRules.map((rule) => (
-                                        <tr key={rule.id} className="border-b hover:bg-gray-50">
-                                            <td className="p-2 md:p-4">
-                                                <div>
-                                                    <span className="font-mono text-xs md:text-sm font-semibold text-green-600">
-                                                        {rule.problem?.id ?? '-'}
-                                                    </span>
-                                                    <p className="text-xs text-gray-600 hidden md:block">{rule.problem?.name ?? '-'}</p>
-                                                </div>
-                                            </td>
-                                            <td className="p-2 md:p-4">
-                                                <div>
-                                                    <span className="font-mono text-xs md:text-sm font-semibold text-green-600">
-                                                        {rule.symptom?.id ?? '-'}
-                                                    </span>
-                                                    <p className="text-xs text-gray-600 hidden md:block">{rule.symptom?.name ?? '-'}</p>
-                                                </div>
-                                            </td>
-                                            <td className="p-2 md:p-4">
-                                                <CFInput
-                                                    value={rule.cfPakar}
-                                                    onChange={(value) =>
-                                                        handleUpdateCF(rule.problem?.id ?? '', rule.symptom?.id ?? '', value)
-                                                    }
-                                                />
-                                            </td>
-                                            <td className="p-2 md:p-4">
-                                                <div className="flex items-center justify-end gap-1 md:gap-2">
-                                                    <Button
-                                                        variant="destructive"
-                                                        size="sm"
-                                                        onClick={() => handleDeleteRule(rule.id)}
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
+                                    filteredRules.map((rule) => {
+                                        const safeValue = (typeof rule.cfPakar === 'number' && !isNaN(rule.cfPakar)) ? rule.cfPakar : 0;
+                                        return (
+                                            <tr key={rule.id} className="border-b hover:bg-gray-50">
+                                                <td className="p-2 md:p-4">
+                                                    <div>
+                                                        <span className="font-mono text-xs md:text-sm font-semibold text-green-600">
+                                                            {rule.problem?.id ?? '-'}
+                                                        </span>
+                                                        <p className="text-xs text-gray-600 hidden md:block">{rule.problem?.name ?? '-'}</p>
+                                                    </div>
+                                                </td>
+                                                <td className="p-2 md:p-4">
+                                                    <div>
+                                                        <span className="font-mono text-xs md:text-sm font-semibold text-green-600">
+                                                            {rule.symptom?.id ?? '-'}
+                                                        </span>
+                                                        <p className="text-xs text-gray-600 hidden md:block">{rule.symptom?.name ?? '-'}</p>
+                                                    </div>
+                                                </td>
+                                                <td className="p-2 md:p-4">
+                                                    <div className="flex justify-center">
+                                                        <span className={`px-4 py-2 rounded-md border-2 font-semibold text-sm ${getColorClass(safeValue)}`}>
+                                                            {safeValue.toFixed(2)}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="p-2 md:p-4">
+                                                    <div className="flex items-center justify-end gap-1 md:gap-2">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="text-green-600 border-green-300 hover:bg-green-50"
+                                                            onClick={() => setEditingRule(rule)}
+                                                        >
+                                                            <Pencil className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button
+                                                            variant="destructive"
+                                                            size="sm"
+                                                            onClick={() => handleDeleteRule(rule.id)}
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
                                 )}
                             </tbody>
                         </table>
@@ -331,14 +302,28 @@ export default function SuspensionRulesPage() {
             </Card>
 
             {showAddModal && (
-                <AddRuleModal
+                <RuleModal
+                    mode="add"
                     problems={problems}
                     symptoms={symptoms}
                     onClose={() => setShowAddModal(false)}
                     onSuccess={(newProblemId: string) => {
                         setShowAddModal(false);
-                        // Filter ke problem yang baru dibuat agar langsung terlihat
                         fetchData(newProblemId);
+                    }}
+                />
+            )}
+
+            {editingRule && (
+                <RuleModal
+                    mode="edit"
+                    problems={problems}
+                    symptoms={symptoms}
+                    existingRule={editingRule}
+                    onClose={() => setEditingRule(null)}
+                    onSuccess={() => {
+                        setEditingRule(null);
+                        fetchData();
                     }}
                 />
             )}
@@ -346,104 +331,39 @@ export default function SuspensionRulesPage() {
     );
 }
 
-function CFInput({ value, onChange }: { value: number; onChange: (value: number) => void }) {
-    const safeValue = (typeof value === 'number' && !isNaN(value)) ? value : 0;
-    const [editing, setEditing] = useState(false);
-    const [tempValue, setTempValue] = useState(safeValue.toString());
-
-    useEffect(() => {
-        const v = (typeof value === 'number' && !isNaN(value)) ? value : 0;
-        setTempValue(v.toString());
-    }, [value]);
-
-    const handleSave = () => {
-        const numValue = parseFloat(tempValue);
-        if (isNaN(numValue) || numValue < 0 || numValue > 1) {
-            alert('CF must be between 0.0 and 1.0');
-            setTempValue(safeValue.toString());
-            return;
-        }
-        onChange(numValue);
-        setEditing(false);
-    };
-
-    if (editing) {
-        return (
-            <div className="flex items-center gap-2 justify-center">
-                <Input
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    max="1"
-                    value={tempValue}
-                    onChange={(e) => setTempValue(e.target.value)}
-                    className="w-24 text-center"
-                    autoFocus
-                    onBlur={handleSave}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleSave();
-                        if (e.key === 'Escape') {
-                            setTempValue(safeValue.toString());
-                            setEditing(false);
-                        }
-                    }}
-                />
-            </div>
-        );
-    }
-
-    const getColorClass = (cf: number) => {
-        if (cf >= 0.8) return 'bg-green-100 text-green-800 border-green-300';
-        if (cf >= 0.6) return 'bg-blue-100 text-blue-800 border-blue-300';
-        if (cf >= 0.4) return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-        return 'bg-red-100 text-red-800 border-red-300';
-    };
-
-    return (
-        <div className="flex justify-center">
-            <button
-                onClick={() => setEditing(true)}
-                className={`px-4 py-2 rounded-md border-2 font-semibold ${getColorClass(safeValue)} hover:opacity-80 transition-opacity`}
-            >
-                {safeValue.toFixed(2)}
-            </button>
-        </div>
-    );
-}
-
-function AddRuleModal({
+function RuleModal({
+    mode,
     problems,
     symptoms,
+    existingRule,
     onClose,
     onSuccess,
 }: {
+    mode: 'add' | 'edit';
     problems: Problem[];
     symptoms: Symptom[];
+    existingRule?: Rule;
     onClose: () => void;
-    onSuccess: (problemId: string) => void; // Pass problemId agar parent bisa auto-filter
+    onSuccess: (problemId: string) => void;
 }) {
-    // Gunakan ref untuk baca langsung dari DOM — hindari masalah stale closure
     const problemRef = useRef<HTMLSelectElement>(null);
     const symptomRef = useRef<HTMLSelectElement>(null);
     const cfRef = useRef<HTMLInputElement>(null);
     const [loading, setLoading] = useState(false);
 
-    // State untuk preview di label — supaya user bisa konfirmasi pilihannya
     const [selectedProblemLabel, setSelectedProblemLabel] = useState('');
     const [selectedSymptomLabel, setSelectedSymptomLabel] = useState('');
+
+    const isEdit = mode === 'edit' && existingRule;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Baca langsung dari DOM ref — tidak bergantung pada React state
         const pId = problemRef.current?.value ?? '';
         const sId = symptomRef.current?.value ?? '';
         const cfRaw = cfRef.current?.value ?? '';
         const cf = cfRaw === '' ? 0.7 : parseFloat(cfRaw);
         const cfFinal = isNaN(cf) || cf < 0 || cf > 1 ? 0.7 : cf;
-
-        // Log untuk debugging — cek di DevTools Console
-        console.log('[AddRuleModal] Submitting:', { problemId: pId, symptomId: sId, expertCf: cfFinal });
 
         if (!pId) {
             alert('Pilih Problem terlebih dahulu!');
@@ -457,18 +377,28 @@ function AddRuleModal({
         setLoading(true);
         try {
             const token = getToken();
-            const payload = { problemId: pId, symptomId: sId, expertCf: cfFinal };
-            console.log('[AddRuleModal] Sending payload:', JSON.stringify(payload));
 
-            await axios.post('/admin/suspension/rules', payload, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            if (isEdit) {
+                // UPDATE: hanya update CF value
+                await axios.put(
+                    `/admin/suspension/rules/${existingRule.id}`,
+                    { expertCf: cfFinal },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+                alert('Rule updated successfully!');
+            } else {
+                // CREATE: buat rule baru
+                const payload = { problemId: pId, symptomId: sId, expertCf: cfFinal };
+                await axios.post('/admin/suspension/rules', payload, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                alert('Rule created successfully!');
+            }
 
-            alert('Rule created successfully!');
-            onSuccess(pId); // Kirim problemId agar parent auto-filter ke problem ini
+            onSuccess(pId);
         } catch (error: any) {
-            console.error('[AddRuleModal] Failed to create rule:', error);
-            alert(error.response?.data?.message || 'Failed to create rule!');
+            console.error('Failed to save rule:', error);
+            alert(error.response?.data?.message || 'Failed to save rule!');
         } finally {
             setLoading(false);
         }
@@ -478,8 +408,12 @@ function AddRuleModal({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <Card className="w-full max-w-md">
                 <CardHeader>
-                    <CardTitle>Add New Rule</CardTitle>
-                    <CardDescription>Create a new Problem-Symptom rule with CF value</CardDescription>
+                    <CardTitle>{isEdit ? 'Edit Rule' : 'Add New Rule'}</CardTitle>
+                    <CardDescription>
+                        {isEdit
+                            ? 'Update the CF value for this rule'
+                            : 'Create a new Problem-Symptom rule with CF value'}
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -487,13 +421,14 @@ function AddRuleModal({
                             <label className="block text-sm font-medium mb-2">Problem</label>
                             <select
                                 ref={problemRef}
-                                defaultValue=""
+                                defaultValue={isEdit ? existingRule.problem?.id : ''}
                                 onChange={(e) => {
                                     const opt = e.target.options[e.target.selectedIndex];
                                     setSelectedProblemLabel(opt.text);
                                 }}
-                                className="w-full border rounded-md px-3 py-2 bg-white text-gray-900"
+                                className="w-full border rounded-md px-3 py-2 bg-white text-gray-900 disabled:bg-gray-100 disabled:text-gray-500"
                                 required
+                                disabled={!!isEdit}
                             >
                                 <option value="">-- Pilih Problem --</option>
                                 {problems.map((p) => (
@@ -502,7 +437,7 @@ function AddRuleModal({
                                     </option>
                                 ))}
                             </select>
-                            {selectedProblemLabel && (
+                            {!isEdit && selectedProblemLabel && (
                                 <p className="text-xs text-green-700 mt-1">✓ Dipilih: {selectedProblemLabel}</p>
                             )}
                         </div>
@@ -511,13 +446,14 @@ function AddRuleModal({
                             <label className="block text-sm font-medium mb-2">Symptom</label>
                             <select
                                 ref={symptomRef}
-                                defaultValue=""
+                                defaultValue={isEdit ? existingRule.symptom?.id : ''}
                                 onChange={(e) => {
                                     const opt = e.target.options[e.target.selectedIndex];
                                     setSelectedSymptomLabel(opt.text);
                                 }}
-                                className="w-full border rounded-md px-3 py-2 bg-white text-gray-900"
+                                className="w-full border rounded-md px-3 py-2 bg-white text-gray-900 disabled:bg-gray-100 disabled:text-gray-500"
                                 required
+                                disabled={!!isEdit}
                             >
                                 <option value="">-- Pilih Symptom --</option>
                                 {symptoms.map((s) => (
@@ -526,7 +462,7 @@ function AddRuleModal({
                                     </option>
                                 ))}
                             </select>
-                            {selectedSymptomLabel && (
+                            {!isEdit && selectedSymptomLabel && (
                                 <p className="text-xs text-green-700 mt-1">✓ Dipilih: {selectedSymptomLabel}</p>
                             )}
                         </div>
@@ -539,7 +475,7 @@ function AddRuleModal({
                                 step="0.1"
                                 min="0"
                                 max="1"
-                                defaultValue="0.7"
+                                defaultValue={isEdit ? existingRule.cfPakar : 0.7}
                                 className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
                             />
@@ -560,7 +496,10 @@ function AddRuleModal({
                                 type="submit"
                                 disabled={loading}
                             >
-                                {loading ? 'Creating...' : 'Create Rule'}
+                                {loading
+                                    ? (isEdit ? 'Updating...' : 'Creating...')
+                                    : (isEdit ? 'Update Rule' : 'Create Rule')
+                                }
                             </Button>
                         </div>
                     </form>
@@ -569,4 +508,3 @@ function AddRuleModal({
         </div>
     );
 }
-
