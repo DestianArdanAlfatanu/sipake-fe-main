@@ -21,7 +21,7 @@ interface ConsultationHistory {
         id: string;
         name: string;
         description: string;
-        media: string;
+        picture: string;
         solution?: { id: number; solution: string } | null;
     } | null;
 }
@@ -187,11 +187,12 @@ const SuspensionConsultationHistoriesPage = () => {
                                                                 </div>
                                                             </div>
 
-                                                            {h.problem.media && (
+                                                            {h.problem.picture && (
                                                                 <img
-                                                                    src={getAssetUrl(`public/images/problems/${h.problem.media}`)}
+                                                                    src={getAssetUrl(`public/images/problems/${h.problem.picture}`)}
                                                                     alt={h.problem.name}
                                                                     className="max-w-sm h-40 object-contain rounded-lg border border-gray-100"
+                                                                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                                                                 />
                                                             )}
 

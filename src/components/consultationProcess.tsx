@@ -229,6 +229,7 @@ const ConsultationProcessComp: React.FC<Props> = ({ token, apiBaseUrl, historyRo
                                             src={getAssetUrl(`public/images/problems/${ranking.problem.picture}`)}
                                             alt={ranking.problem.name}
                                             className="max-w-sm h-40 object-contain rounded-lg border border-gray-100 mx-auto"
+                                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                                         />
                                     )}
 

@@ -192,6 +192,7 @@ const ConsultationHistoriesPage = () => {
                                                                     src={getAssetUrl(`public/images/problems/${h.problem.picture}`)}
                                                                     alt={h.problem.name}
                                                                     className="max-w-sm h-40 object-contain rounded-lg border border-gray-100"
+                                                                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                                                                 />
                                                             )}
 

@@ -40,11 +40,37 @@ function mergeById<T extends { id: string }>(a: T[], b: T[]): T[] {
     return Array.from(map.values()).sort((x, y) => x.id.localeCompare(y.id));
 }
 
+// Mapping nilai CF ke istilah kualitatif pakar
+const CF_OPTIONS = [
+    { value: 1.0, label: 'Sangat Pasti / Selalu' },
+    { value: 0.9, label: 'Hampir Pasti' },
+    { value: 0.8, label: 'Sangat Yakin' },
+    { value: 0.7, label: 'Yakin' },
+    { value: 0.6, label: 'Kemungkinan Besar' },
+    { value: 0.5, label: 'Bisa Jadi 50:50' },
+    { value: 0.4, label: 'Kayaknya' },
+    { value: 0.3, label: 'Kurang Yakin' },
+    { value: 0.2, label: 'Kemungkinan Kecil' },
+    { value: 0.1, label: 'Hampir Tidak Mungkin' },
+    { value: 0.0, label: 'Pasti Tidak Mungkin' },
+];
+
+function getCfLabel(cf: number): string {
+    const match = CF_OPTIONS.find((opt) => Math.abs(opt.value - cf) < 0.001);
+    return match ? match.label : `Custom`;
+}
+
 function getColorClass(cf: number) {
+    if (cf >= 0.9) return 'bg-emerald-100 text-emerald-800 border-emerald-300';
     if (cf >= 0.8) return 'bg-green-100 text-green-800 border-green-300';
+    if (cf >= 0.7) return 'bg-teal-100 text-teal-800 border-teal-300';
     if (cf >= 0.6) return 'bg-blue-100 text-blue-800 border-blue-300';
+    if (cf >= 0.5) return 'bg-sky-100 text-sky-800 border-sky-300';
     if (cf >= 0.4) return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-    return 'bg-red-100 text-red-800 border-red-300';
+    if (cf >= 0.3) return 'bg-amber-100 text-amber-800 border-amber-300';
+    if (cf >= 0.2) return 'bg-orange-100 text-orange-800 border-orange-300';
+    if (cf >= 0.1) return 'bg-red-100 text-red-800 border-red-300';
+    return 'bg-gray-100 text-gray-800 border-gray-300';
 }
 
 export default function EngineRulesPage() {
@@ -182,14 +208,31 @@ export default function EngineRulesPage() {
             <Card className="bg-blue-50 border-blue-200">
                 <CardContent className="pt-6">
                     <div className="flex items-start gap-3">
-                        <Info className="h-5 w-5 text-blue-600 mt-0.5" />
-                        <div className="text-sm text-blue-900">
-                            <p className="font-semibold mb-1">Certainty Factor (CF) Guidelines:</p>
-                            <ul className="list-disc list-inside space-y-1">
-                                <li>CF range: 0.0 - 1.0</li>
-                                <li>0.0 = No certainty, 1.0 = Absolutely certain</li>
-                                <li>Recommended: 0.6 - 0.9 for most cases</li>
-                            </ul>
+                        <Info className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
+                        <div className="text-sm text-blue-900 w-full">
+                            <p className="font-semibold mb-2">Tabel Interpretasi Nilai Certainty Factor (CF):</p>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-xs border-collapse">
+                                    <thead>
+                                        <tr className="border-b border-blue-200">
+                                            <th className="text-left py-1 pr-4 font-semibold">Istilah Kualitatif Pakar</th>
+                                            <th className="text-center py-1 font-semibold">CF Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {CF_OPTIONS.map((opt) => (
+                                            <tr key={opt.value} className="border-b border-blue-100">
+                                                <td className="py-1 pr-4">{opt.label}</td>
+                                                <td className="text-center py-1">
+                                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${getColorClass(opt.value)}`}>
+                                                        {opt.value.toFixed(1)}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </CardContent>
@@ -264,9 +307,12 @@ export default function EngineRulesPage() {
                                                     </div>
                                                 </td>
                                                 <td className="p-2 md:p-4">
-                                                    <div className="flex justify-center">
-                                                        <span className={`px-4 py-2 rounded-md border-2 font-semibold text-sm ${getColorClass(safeValue)}`}>
-                                                            {safeValue.toFixed(2)}
+                                                    <div className="flex flex-col items-center gap-1">
+                                                        <span className={`px-3 py-1.5 rounded-md border-2 font-semibold text-sm ${getColorClass(safeValue)}`}>
+                                                            {safeValue.toFixed(1)}
+                                                        </span>
+                                                        <span className="text-[10px] text-gray-500 font-medium">
+                                                            {getCfLabel(safeValue)}
                                                         </span>
                                                     </div>
                                                 </td>
@@ -346,7 +392,7 @@ function RuleModal({
 }) {
     const problemRef = useRef<HTMLSelectElement>(null);
     const symptomRef = useRef<HTMLSelectElement>(null);
-    const cfRef = useRef<HTMLInputElement>(null);
+    const cfRef = useRef<HTMLSelectElement>(null);
     const [loading, setLoading] = useState(false);
 
     const [selectedProblemLabel, setSelectedProblemLabel] = useState('');
@@ -466,17 +512,20 @@ function RuleModal({
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium mb-2">CF Value (0.0 - 1.0)</label>
-                            <input
+                            <label className="block text-sm font-medium mb-2">Nilai Certainty Factor (CF)</label>
+                            <select
                                 ref={cfRef}
-                                type="number"
-                                step="0.1"
-                                min="0"
-                                max="1"
-                                defaultValue={isEdit ? existingRule.cfPakar : 0.7}
+                                defaultValue={isEdit ? existingRule.cfPakar.toString() : '0.7'}
                                 className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
-                            />
+                            >
+                                {CF_OPTIONS.map((opt) => (
+                                    <option key={opt.value} value={opt.value.toString()}>
+                                        {opt.value.toFixed(1)} — {opt.label}
+                                    </option>
+                                ))}
+                            </select>
+                            <p className="text-xs text-gray-500 mt-1.5">Pilih tingkat keyakinan pakar terhadap gejala ini</p>
                         </div>
 
                         <div className="flex gap-2 justify-end pt-4">
