@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import axios from "@/lib/axios";
 import { Response } from "@/types/api.dt";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getAssetUrl } from "@/lib/utils";
 import {
     CheckCircle2,
@@ -15,12 +15,18 @@ import {
     AlertTriangle,
     ShieldCheck,
     Loader2,
+    Volume2,
+    VolumeX,
+    Play,
+    Pause,
 } from "lucide-react";
 
 interface Symptom {
     id: string;
     name: string;
     picture: string;
+    media?: string | null;
+    mediaType?: "video" | "audio" | "gif" | null;
 }
 
 interface ProblemRanking {
@@ -58,17 +64,216 @@ interface Props {
     historyRoute: string;
 }
 
+/**
+ * Helper: detect media type from filename extension
+ */
+function detectMediaType(filename: string): "video" | "audio" | "gif" | "image" | null {
+    if (!filename) return null;
+    const ext = filename.split(".").pop()?.toLowerCase();
+    if (!ext) return null;
+    if (["mp4", "webm"].includes(ext)) return "video";
+    if (["mp3", "wav", "ogg"].includes(ext)) return "audio";
+    if (ext === "gif") return "gif";
+    if (["jpg", "jpeg", "png", "webp"].includes(ext)) return "image";
+    return null;
+}
+
+/**
+ * SymptomMediaPlayer — renders the correct media element 
+ * with autoplay + loop for symptom media (video, audio, gif)
+ */
+const SymptomMediaPlayer: React.FC<{
+    symptom: Symptom;
+    onMediaError?: () => void;
+}> = ({ symptom, onMediaError }) => {
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const audioRef = useRef<HTMLAudioElement>(null);
+    const [isAudioPlaying, setIsAudioPlaying] = useState(true);
+    const [isMuted, setIsMuted] = useState(false);
+
+    // Determine what media to show
+    const mediaType = symptom.mediaType || (symptom.media ? detectMediaType(symptom.media) : null);
+    const mediaUrl = symptom.media
+        ? getAssetUrl(`public/media/symptoms/${symptom.media}`)
+        : null;
+
+    // Cleanup audio/video on unmount or symptom change
+    useEffect(() => {
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+            }
+            if (videoRef.current) {
+                videoRef.current.pause();
+                videoRef.current.currentTime = 0;
+            }
+        };
+    }, [symptom.id]);
+
+    // Auto-play audio when symptom changes
+    useEffect(() => {
+        if (mediaType === "audio" && audioRef.current) {
+            audioRef.current.play().catch(() => {
+                // Browser might block autoplay; user must interact
+                setIsAudioPlaying(false);
+            });
+            setIsAudioPlaying(true);
+        }
+    }, [symptom.id, mediaType]);
+
+    if (!mediaUrl || !mediaType) return null;
+
+    // ── VIDEO ──
+    if (mediaType === "video") {
+        return (
+            <div className="flex justify-center">
+                <div className="rounded-xl border border-gray-100 bg-black/5 p-1 shadow-sm overflow-hidden w-full max-w-sm">
+                    <video
+                        ref={videoRef}
+                        key={symptom.id}
+                        src={mediaUrl}
+                        autoPlay
+                        loop
+                        muted={isMuted}
+                        playsInline
+                        className="w-full h-44 object-contain rounded-lg"
+                        onError={() => onMediaError?.()}
+                    />
+                    <div className="flex items-center justify-center gap-2 py-1.5">
+                        <button
+                            type="button"
+                            onClick={() => setIsMuted(!isMuted)}
+                            className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+                            title={isMuted ? "Unmute" : "Mute"}
+                        >
+                            {isMuted ? (
+                                <VolumeX className="h-3.5 w-3.5 text-gray-500" />
+                            ) : (
+                                <Volume2 className="h-3.5 w-3.5 text-blue-600" />
+                            )}
+                        </button>
+                        <span className="text-[10px] text-gray-400 uppercase tracking-wider font-medium">
+                            Video Gejala • Auto-play
+                        </span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // ── GIF ──
+    if (mediaType === "gif") {
+        return (
+            <div className="flex justify-center">
+                <div className="rounded-xl border border-gray-100 bg-white p-2 shadow-sm">
+                    <img
+                        key={symptom.id}
+                        src={mediaUrl}
+                        alt={symptom.name}
+                        className="w-full max-w-sm h-44 object-contain rounded-lg"
+                        onError={() => onMediaError?.()}
+                    />
+                    <p className="text-center text-[10px] text-gray-400 uppercase tracking-wider font-medium mt-1.5">
+                        Animasi Gejala • Loop
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    // ── AUDIO ──
+    if (mediaType === "audio") {
+        const togglePlay = () => {
+            if (!audioRef.current) return;
+            if (isAudioPlaying) {
+                audioRef.current.pause();
+                setIsAudioPlaying(false);
+            } else {
+                audioRef.current.play().catch(() => {});
+                setIsAudioPlaying(true);
+            }
+        };
+
+        return (
+            <div className="flex justify-center">
+                <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50 p-4 shadow-sm w-full max-w-sm">
+                    <audio
+                        ref={audioRef}
+                        key={symptom.id}
+                        src={mediaUrl}
+                        loop
+                        onError={() => onMediaError?.()}
+                        onPlay={() => setIsAudioPlaying(true)}
+                        onPause={() => setIsAudioPlaying(false)}
+                    />
+
+                    {/* Audio waveform animation */}
+                    <div className="flex items-center justify-center gap-3 mb-3">
+                        <div className="flex items-end gap-[3px] h-8">
+                            {[...Array(12)].map((_, i) => (
+                                <div
+                                    key={i}
+                                    className={`w-[3px] rounded-full transition-all duration-150 ${
+                                        isAudioPlaying
+                                            ? "bg-blue-500 animate-pulse"
+                                            : "bg-gray-300"
+                                    }`}
+                                    style={{
+                                        height: isAudioPlaying
+                                            ? `${Math.random() * 60 + 40}%`
+                                            : "20%",
+                                        animationDelay: `${i * 80}ms`,
+                                        animationDuration: `${600 + Math.random() * 400}ms`,
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Play / Pause button */}
+                    <div className="flex items-center justify-center gap-2">
+                        <button
+                            type="button"
+                            onClick={togglePlay}
+                            className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium transition-colors shadow-sm"
+                        >
+                            {isAudioPlaying ? (
+                                <>
+                                    <Pause className="h-3.5 w-3.5" /> Pause
+                                </>
+                            ) : (
+                                <>
+                                    <Play className="h-3.5 w-3.5" /> Putar Suara
+                                </>
+                            )}
+                        </button>
+                    </div>
+
+                    <p className="text-center text-[10px] text-blue-400 uppercase tracking-wider font-medium mt-2">
+                        🔊 Suara Gejala • Dengarkan Baik-Baik
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    return null;
+};
+
 const ConsultationProcessComp: React.FC<Props> = ({ token, apiBaseUrl, historyRoute }) => {
     const [status, setStatus] = useState<ConsultResult["status"]>();
     const [symptom, setSymptom] = useState<Symptom>();
     const [rankings, setRankings] = useState<ProblemRanking[]>();
     const [questionNumber, setQuestionNumber] = useState(1);
     const [imgVisible, setImgVisible] = useState(true);
+    const [mediaVisible, setMediaVisible] = useState(true);
     const router = useRouter();
 
-    // Reset image visibility setiap kali symptom berubah
+    // Reset image and media visibility setiap kali symptom berubah
     useEffect(() => {
         setImgVisible(true);
+        setMediaVisible(true);
     }, [symptom?.id]);
 
     useEffect(() => { startConsultation(); }, []);
@@ -79,6 +284,7 @@ const ConsultationProcessComp: React.FC<Props> = ({ token, apiBaseUrl, historyRo
         setSymptom(undefined);
         setQuestionNumber(1);
         setImgVisible(true);
+        setMediaVisible(true);
         const response = await axios.get<Response<Symptom>>(
             `${apiBaseUrl}/start`,
             { headers: { Authorization: `Bearer ${token}` } }
@@ -268,6 +474,8 @@ const ConsultationProcessComp: React.FC<Props> = ({ token, apiBaseUrl, historyRo
     }
 
     /* ─── Symptom Question (default / Continue) ─── */
+    const hasMedia = symptom?.media && symptom?.mediaType;
+
     return (
         <div className="max-w-xl mx-auto py-4">
             <Card className="border border-gray-200 shadow-sm overflow-hidden">
@@ -286,11 +494,19 @@ const ConsultationProcessComp: React.FC<Props> = ({ token, apiBaseUrl, historyRo
                         <p className="text-sm font-medium text-gray-700">Apakah Anda mengalami gejala berikut?</p>
                     </div>
 
-                    {/* Symptom Image + Question + Buttons */}
+                    {/* Symptom Media + Image + Question + Buttons */}
                     {symptom && (
                         <>
-                            {/* Symptom Image — hanya tampil jika ada picture DAN belum error */}
-                            {symptom.picture && imgVisible && (
+                            {/* Media Player (Video / Audio / GIF) — auto-play + loop */}
+                            {hasMedia && mediaVisible && (
+                                <SymptomMediaPlayer
+                                    symptom={symptom}
+                                    onMediaError={() => setMediaVisible(false)}
+                                />
+                            )}
+
+                            {/* Symptom Image — tampil jika ada picture DAN tidak ada media (atau media error) */}
+                            {symptom.picture && imgVisible && (!hasMedia || !mediaVisible) && (
                                 <div className="flex justify-center">
                                     <div className="rounded-xl border border-gray-100 bg-white p-2 shadow-sm">
                                         <img
