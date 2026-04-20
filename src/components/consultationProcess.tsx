@@ -276,8 +276,45 @@ const ConsultationProcessComp: React.FC<Props> = ({ token, apiBaseUrl, historyRo
         setMediaVisible(true);
     }, [symptom?.id]);
 
-    useEffect(() => { startConsultation(); }, []);
+    // On mount: try to resume active session first, then start fresh
+    useEffect(() => { initConsultation(); }, []);
 
+    /**
+     * Initialize consultation — try to resume first, fallback to start
+     */
+    const initConsultation = async () => {
+        setStatus(undefined);
+        setRankings(undefined);
+        setSymptom(undefined);
+        setImgVisible(true);
+        setMediaVisible(true);
+
+        try {
+            // Try to resume an active session (requires auth)
+            const resumeRes = await axios.get<{ data: { active: boolean; data: { symptom: Symptom; questionNumber: number } | null } }>(
+                `${apiBaseUrl}/resume`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            const resumeData = resumeRes.data.data;
+
+            if (resumeData && resumeData.active && resumeData.data) {
+                // Active session found — jump to current question
+                setSymptom(resumeData.data.symptom);
+                setQuestionNumber(resumeData.data.questionNumber);
+                return;
+            }
+        } catch {
+            // Resume failed (e.g. no auth, network error) — continue to start
+        }
+
+        // No active session — start fresh from question 1
+        await startConsultation();
+    };
+
+    /**
+     * Start a brand new consultation from question 1
+     */
     const startConsultation = async () => {
         setStatus(undefined);
         setRankings(undefined);
