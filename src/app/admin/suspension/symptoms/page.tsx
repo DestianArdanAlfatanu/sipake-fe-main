@@ -280,26 +280,41 @@ function SymptomModal({
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium mb-2">Symptom ID</label>
+                            <label className="block text-sm font-medium mb-2">
+                                Symptom ID <span className="text-red-500">*</span>
+                                <span className="text-xs text-gray-500 ml-2">(Format: GS01, GS02, GS111, etc.)</span>
+                            </label>
                             <Input
                                 className="w-full border rounded-md p-2 bg-white"
                                 value={formData.id}
                                 onChange={(e) => setFormData({ ...formData, id: e.target.value })}
-                                placeholder="e.g., GS01"
+                                placeholder="e.g., GS01, GS02, GS111"
                                 disabled={!!symptom}
                                 required
+                                pattern="^GS\d{2,3}$"
+                                title="Format: GS followed by 2-3 digits (e.g., GS01, GS111)"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium mb-2">Symptom Name</label>
+                            <label className="block text-sm font-medium mb-2">
+                                Symptom Name <span className="text-red-500">*</span>
+                                <span className="text-xs text-gray-500 ml-2">(min. 5 characters)</span>
+                            </label>
                             <Input
                                 className="w-full border rounded-md p-2 bg-white"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                placeholder="e.g., Mobil Terasa Goyang"
+                                placeholder="e.g., Mobil Terasa Goyang (minimum 5 characters)"
                                 required
+                                minLength={5}
+                                maxLength={255}
                             />
+                            {formData.name.length > 0 && formData.name.length < 5 && (
+                                <p className="text-xs text-red-500 mt-1">
+                                    Name must be at least 5 characters (current: {formData.name.length})
+                                </p>
+                            )}
                         </div>
 
                         <div>

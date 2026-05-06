@@ -296,26 +296,41 @@ function ProblemModal({
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium mb-2">Problem ID</label>
+                            <label className="block text-sm font-medium mb-2">
+                                Problem ID <span className="text-red-500">*</span>
+                                <span className="text-xs text-gray-500 ml-2">(Format: PS01, PS02, PS111, etc.)</span>
+                            </label>
                             <Input
                                 className="bg-white text-black"
                                 value={formData.id}
                                 onChange={(e) => setFormData({ ...formData, id: e.target.value })}
-                                placeholder="e.g., PS01"
+                                placeholder="e.g., PS01, PS02, PS111"
                                 disabled={!!problem}
                                 required
+                                pattern="^PS\d{2,3}$"
+                                title="Format: PS followed by 2-3 digits (e.g., PS01, PS111)"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium mb-2">Problem Name</label>
+                            <label className="block text-sm font-medium mb-2">
+                                Problem Name <span className="text-red-500">*</span>
+                                <span className="text-xs text-gray-500 ml-2">(min. 5 characters)</span>
+                            </label>
                             <Input
                                 className="bg-white text-black"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                placeholder="e.g., Shock Absorber Bocor"
+                                placeholder="e.g., Shock Absorber Bocor (minimum 5 characters)"
                                 required
+                                minLength={5}
+                                maxLength={255}
                             />
+                            {formData.name.length > 0 && formData.name.length < 5 && (
+                                <p className="text-xs text-red-500 mt-1">
+                                    Name must be at least 5 characters (current: {formData.name.length})
+                                </p>
+                            )}
                         </div>
 
                         <div>

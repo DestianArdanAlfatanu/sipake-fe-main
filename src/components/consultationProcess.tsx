@@ -111,6 +111,23 @@ const SymptomMediaPlayer: React.FC<{
         };
     }, [symptom.id]);
 
+    // Auto-play video when symptom changes
+    // Try unmuted first (works because user already interacted with page via Ya/Tidak buttons)
+    // Fallback to muted if browser still blocks
+    useEffect(() => {
+        if (mediaType === "video" && videoRef.current) {
+            const video = videoRef.current;
+            video.muted = false;
+            setIsMuted(false);
+            video.play().catch(() => {
+                // Browser blocked unmuted autoplay — fallback to muted
+                video.muted = true;
+                setIsMuted(true);
+                video.play().catch(() => {});
+            });
+        }
+    }, [symptom.id, mediaType]);
+
     // Auto-play audio when symptom changes
     useEffect(() => {
         if (mediaType === "audio" && audioRef.current) {
